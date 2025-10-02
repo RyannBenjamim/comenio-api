@@ -1,98 +1,225 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Estrutura do Projeto
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este documento descreve as tabelas do banco de dados e a divisão de domínios/módulos da API.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## MÓDULOS DO BACK-END
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Cada módulo possui uma ou mais tabelas do banco de dados, organizadas por domínio.
 
-## Project setup
+### 01 - USUÁRIOS
+Tabelas relacionadas à gestão de usuários e perfis:
+- USUARIOS
+- SUPERADMINS
+- MODERADORES
+- PROFESSORES
+- ALUNOS
+- RESPONSAVEIS
+- ALUNOS_RESPONSAVEIS (N:N)
 
-```bash
-$ npm install
-```
+### 02 - ACADÊMICO
+Tabelas relacionadas a turmas, matérias e relacionamentos acadêmicos:
+- TURMAS
+- MATERIAS
+- ALUNOS_MATERIAS (N:N)
+- PROFESSORES_TURMAS (N:N)
 
-## Compile and run the project
+### 03 - AUTH
+Módulo responsável pela autenticação e login de usuários:
+- Login
 
-```bash
-# development
-$ npm run start
+### 04 - COMUNIDADES
+Tabelas relacionadas a grupos e comunidades de estudo:
+- COMUNIDADES
 
-# watch mode
-$ npm run start:dev
+### 05 - ATIVIDADES
+Tabelas relacionadas a atividades escolares, resoluções e correções:
+- ATIVIDADES
+- RESOLUCOES
+- CORRECOES
 
-# production mode
-$ npm run start:prod
-```
+### 06 - POSTS
+Tabelas relacionadas ao feed de publicações, respostas e interações:
+- POSTS
+- RESPOSTAS
+- CURTIDAS  
+*(parametrizado pelo contexto: feed ou comunidade)*
 
-## Run tests
+### 07 - FEEDS
+Tabelas relacionadas aos feeds de conteúdo:
+- FEEDS
 
-```bash
-# unit tests
-$ npm run test
+### 08 - INSTITUIÇÕES
+Tabelas relacionadas às instituições de ensino:
+- INSTITUICOES
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
-```
+## TABELAS DO BANCO DE DADOS
 
-## Deployment
+### INSTITUICOES
+| Campo    | Tipo |
+|----------|------|
+| id       | UUID  |
+| nome     | String |
+| telefone | String |
+| cnpj     | String |
+| endereco | String |
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### USUARIOS
+| Campo               | Tipo | Observações |
+|--------------------|------|-------------|
+| id                 | UUID  |
+| instituicao_id     | UUID  | FK -> INSTITUICOES |
+| primeiro_nome      | String | |
+| sobrenome          | String | |
+| email              | String | |
+| senha              | String | |
+| data_nascimento    | Date | |
+| telefone           | String | |
+| foto_perfil_caminho| String | Opcional |
+| cargo              | Enum | SUPERADMIN, MODERADOR, PROFESSOR, ALUNO, RESPONSAVEL |
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### SUPERADMINS
+| Campo   | Tipo | Observações |
+|---------|------|-------------|
+| user_id | UUID | FK -> USUARIOS |
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+### MODERADORES
+| Campo   | Tipo | Observações |
+|---------|------|-------------|
+| user_id | UUID | FK -> USUARIOS |
+| setor   | String | |
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### PROFESSORES
+| Campo           | Tipo | Observações |
+|-----------------|------|-------------|
+| user_id         | UUID | FK -> USUARIOS |
+| matricula       | String | |
+| status_contrato | String | |
+| carga_horaria   | Integer | |
 
-## Resources
+### RESPONSAVEIS
+| Campo            | Tipo | Observações |
+|------------------|------|-------------|
+| user_id          | UUID | FK -> USUARIOS |
+| grau_parentesco  | String | |
+| cpf              | String | |
 
-Check out a few resources that may come in handy when working with NestJS:
+### ALUNOS
+| Campo          | Tipo | Observações |
+|----------------|------|-------------|
+| user_id        | UUID | FK -> USUARIOS |
+| matricula      | String | |
+| turma_id       | UUID | FK -> TURMAS |
+| status_matricula | String | |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### ALUNOS_RESPONSAVEIS (N:N)
+| Campo          | Tipo | Observações |
+|----------------|------|-------------|
+| aluno_id       | UUID | FK -> ALUNOS |
+| responsavel_id | UUID | FK -> RESPONSAVEIS |
 
-## Support
+### TURMAS
+| Campo   | Tipo |
+|---------|------|
+| id      | UUID |
+| titulo  | String |
+| periodo | String |
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### MATERIAS
+| Campo        | Tipo | Observações |
+|--------------|------|-------------|
+| id           | UUID |
+| titulo       | String |
+| tipo         | Enum | EXATAS, HUMANAS, NATUREZA, LINGUAGENS |
+| professor_id | UUID | FK -> PROFESSORES |
 
-## Stay in touch
+### ALUNOS_MATERIAS (N:N)
+| Campo     | Tipo | Observações |
+|-----------|------|-------------|
+| aluno_id  | UUID | FK -> ALUNOS |
+| materia_id| UUID | FK -> MATERIAS |
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### PROFESSORES_TURMAS (N:N)
+| Campo        | Tipo | Observações |
+|--------------|------|-------------|
+| professor_id | UUID | FK -> PROFESSORES |
+| turma_id     | UUID | FK -> TURMAS |
 
-## License
+### FEEDS
+| Campo      | Tipo |
+|------------|------|
+| id         | UUID |
+| titulo     | String |
+| tipo_perfil| String |
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### COMUNIDADES
+| Campo        | Tipo | Observações |
+|--------------|------|-------------|
+| id           | UUID |
+| titulo       | String |
+| foto_caminho | String | Opcional |
+| materia_id   | UUID | FK -> MATERIAS |
+| professor_id | UUID | FK -> PROFESSORES |
+| turma_id     | UUID | FK -> TURMAS |
+
+### ATIVIDADES
+| Campo         | Tipo | Observações |
+|---------------|------|-------------|
+| id            | UUID |
+| titulo        | String |
+| conteudo      | Text |
+| pdf_caminho   | String | Opcional |
+| data_inicio   | DateTime |
+| data_fim      | DateTime |
+| comunidade_id | UUID | FK -> COMUNIDADES |
+
+### RESOLUCOES
+| Campo        | Tipo | Observações |
+|--------------|------|-------------|
+| id           | UUID |
+| aluno_id     | UUID | FK -> ALUNOS |
+| atividade_id | UUID | FK -> ATIVIDADES |
+| conteudo     | Text |
+| pdf_caminho  | String | Opcional |
+
+### CORRECOES
+| Campo        | Tipo | Observações |
+|--------------|------|-------------|
+| id           | UUID |
+| resolucao_id | UUID | FK -> RESOLUCOES |
+| professor_id | UUID | FK -> PROFESSORES |
+| conteudo     | Text |
+| pdf_caminho  | String | Opcional |
+
+### POSTS
+| Campo        | Tipo | Observações |
+|--------------|------|-------------|
+| id           | UUID  |
+| titulo       | String |
+| conteudo     | Text |
+| foto_caminho | String | Opcional |
+| user_id      | UUID | FK -> USUARIOS |
+| feed_id      | UUID | FK -> FEEDS |
+| comunidade_id| UUID | FK -> COMUNIDADES |
+
+### RESPOSTAS
+| Campo      | Tipo | Observações |
+|------------|------|-------------|
+| id         | UUID |
+| conteudo   | Text |
+| user_id    | UUID | FK -> USUARIOS |
+| post_id    | UUID | FK -> POSTS |
+| resposta_id| UUID | FK -> RESPOSTAS (opcional) |
+
+### CURTIDAS
+| Campo      | Tipo | Observações |
+|------------|------|-------------|
+| id         | UUID |
+| user_id    | UUID | FK -> USUARIOS |
+| post_id    | UUID | FK -> POSTS |
+| resposta_id| UUID | FK -> RESPOSTAS (opcional) |
+
+
