@@ -1,26 +1,45 @@
-import { Injectable } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { UsuariosRepository } from './usuarios.repository';
+import { Usuario } from '@prisma/client';
+import { ConflictException, NotFoundException, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuariosService {
-  create(createUsuarioDto: CreateUsuarioDto) {
-    return 'This action adds a new usuario';
+  constructor(private readonly usuariosRepository: UsuariosRepository) {}
+  
+  async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
+    const existingUser = await this.usuariosRepository.findOneByEmail(createUsuarioDto.email);
+    if (existingUser) throw new ConflictException('Esse e-mail já foi cadastrado.');
+
+    const hashPassword = await bcrypt.hash(createUsuarioDto.senha, 10)
+
+    const createdUser = await this.usuariosRepository.create({...createUsuarioDto, senha: hashPassword});
+    return createdUser;
   }
 
-  findAll() {
-    return `This action returns all usuarios`;
+  async findAll(): Promise<Usuario[]> {
+    const users = await this.usuariosRepository.findAll();
+    return users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usuario`;
+  async findOne(id: string): Promise<Usuario> {
+    const existingUser = await this.usuariosRepository.findOne({ id });
+    if (!existingUser) throw new NotFoundException('Usuário não encontrado.');
+    return existingUser;
   }
 
-  update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return `This action updates a #${id} usuario`;
+  async update(id: string, updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
+    const existingUser = await this.usuariosRepository.findOne({ id });
+    if (!existingUser) throw new NotFoundException('Usuário não encontrado.');
+    const updatedUser = await this.usuariosRepository.update({ id }, updateUsuarioDto);
+    return updatedUser;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} usuario`;
+  async remove(id: string): Promise<Usuario> {
+    const deletedUser = await this.usuariosRepository.delete({ id });
+    if (!deletedUser) throw new NotFoundException('Usuário não encontrado.');
+    return deletedUser;
   }
 }
