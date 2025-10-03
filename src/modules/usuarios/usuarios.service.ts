@@ -13,7 +13,7 @@ export class UsuariosService {
     const existingUser = await this.usuariosRepository.findOneByEmail(createUsuarioDto.email);
     if (existingUser) throw new ConflictException('Esse e-mail já foi cadastrado.');
 
-    const hashPassword = await bcrypt.hash(createUsuarioDto.senha, 10)
+    const hashPassword = await bcrypt.hash(createUsuarioDto.senha, 10);
 
     const createdUser = await this.usuariosRepository.create({...createUsuarioDto, senha: hashPassword});
     return createdUser;
