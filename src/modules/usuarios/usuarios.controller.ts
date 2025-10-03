@@ -18,7 +18,7 @@ export class UsuariosController {
   ): Promise<ApiResponse<Omit<Usuario, 'senha'>>> {
     const response = await this.usuariosService.create(createUsuarioDto);
     return {
-      message: 'Usuário criado com sucesso.',
+      message: 'Usuário(a) criado(a) com sucesso.',
       data: sanitizeUser(response)
     }
   }
@@ -38,7 +38,7 @@ export class UsuariosController {
   ): Promise<ApiResponse<Omit<Usuario, 'senha'>>> {
     const response = await this.usuariosService.findOne(id);
     return {
-      message: 'Usuário buscado com sucesso.',
+      message: 'Usuário(a) buscado(a) com sucesso.',
       data: sanitizeUser(response)
     }
   }
@@ -50,7 +50,7 @@ export class UsuariosController {
   ): Promise<ApiResponse<Omit<Usuario, 'senha'>>> {
     const response = await this.usuariosService.update(req.user.id, updateUsuarioDto);
     return {
-      message: 'Usuário atualizado com sucesso.',
+      message: 'Usuário(a) atualizado(a) com sucesso.',
       data: sanitizeUser(response)
     }
   }
@@ -61,7 +61,7 @@ export class UsuariosController {
   ): Promise<ApiResponse<Omit<Usuario, 'senha'>>> {
     const response = await this.usuariosService.remove(req.user.id);
     return {
-      message: `Usuário ${response.primeiroNome} ${response.sobrenome} deletado(a) com sucesso.`,
+      message: `Usuário(a) ${response.primeiroNome} ${response.sobrenome} deletado(a) com sucesso.`,
       data: sanitizeUser(response)
     }
   }

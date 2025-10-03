@@ -7,9 +7,20 @@ import { AtividadesModule } from './modules/atividades/atividades.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { InstituicoesModule } from './modules/instituicoes/instituicoes.module';
 import { AcademicoModule } from './modules/academico/academico.module';
+import { PrismaModule } from './database/prisma.module';
 
 @Module({
-  imports: [UsuariosModule, AuthModule, FeedsModule, ComunidadesModule, AtividadesModule, PostsModule, InstituicoesModule, AcademicoModule],
+  imports: [
+    PrismaModule,
+    UsuariosModule, 
+    AuthModule, 
+    FeedsModule, 
+    ComunidadesModule, 
+    AtividadesModule, 
+    PostsModule, 
+    InstituicoesModule, 
+    AcademicoModule
+  ],
   controllers: [],
   providers: [],
 })
