@@ -1,34 +1,67 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { InstituicoesService } from './instituicoes.service';
-import { CreateInstituicoeDto } from './dto/create-instituicoe.dto';
-import { UpdateInstituicoeDto } from './dto/update-instituicoe.dto';
+import { Instituicao } from '@prisma/client';
+import { ValidateUUIDPipe } from '../../common/pipes/ValideUUIDPipe';
+import { CreateInstituicaoDto } from './dto/create-instituicao.dto';
+import { UpdateInstituicaoDto } from './dto/update-instituicao.dto';
+import type { ApiResponse } from '../../common/interfaces/ApiResponse';
 
+// Aqui será adicionado um adminGuard, essas rotas serão bloqueadas
 @Controller('instituicoes')
 export class InstituicoesController {
   constructor(private readonly instituicoesService: InstituicoesService) {}
 
   @Post()
-  create(@Body() createInstituicoeDto: CreateInstituicoeDto) {
-    return this.instituicoesService.create(createInstituicoeDto);
+  async create(
+    @Body(new ValidationPipe()) createInstituicaoDto: CreateInstituicaoDto
+  ): Promise<ApiResponse<Instituicao>> {
+    const response = await this.instituicoesService.create(createInstituicaoDto);
+    return {
+      message: 'Instituição criada com sucesso.',
+      data: response
+    };
   }
 
   @Get()
-  findAll() {
-    return this.instituicoesService.findAll();
+  async findAll(): Promise<ApiResponse<Instituicao[]>> {
+    const response = await this.instituicoesService.findAll();
+    return {
+      message: 'Instituições listadas com sucesso.',
+      data: response
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.instituicoesService.findOne(+id);
+  async findOne(
+    @Param('id', ValidateUUIDPipe) id: string
+  ): Promise<ApiResponse<Instituicao>> {
+    const response = await this.instituicoesService.findOne(id);
+    return {
+      message: 'Instituição buscada com sucesso.',
+      data: response
+    };
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInstituicoeDto: UpdateInstituicoeDto) {
-    return this.instituicoesService.update(+id, updateInstituicoeDto);
+  async update(
+    @Param('id', ValidateUUIDPipe) id: string,
+    @Body(new ValidationPipe()) updateInstituicaoDto: UpdateInstituicaoDto
+  ): Promise<ApiResponse<Instituicao>> {
+    const response = await this.instituicoesService.update(id, updateInstituicaoDto);
+    return {
+      message: 'Instituição atualizada com sucesso.',
+      data: response
+    };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.instituicoesService.remove(+id);
+  async remove(
+    @Param('id', ValidateUUIDPipe) id: string
+  ): Promise<ApiResponse<Instituicao>> {
+    const response = await this.instituicoesService.remove(id);
+    return {
+      message: `Instituição ${response.nome} deletada com sucesso.`,
+      data: response
+    };
   }
 }
