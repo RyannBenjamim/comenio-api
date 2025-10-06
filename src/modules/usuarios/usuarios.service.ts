@@ -1,15 +1,22 @@
+import { InstituicoesService } from './../instituicoes/instituicoes.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { UsuariosRepository } from './usuarios.repository';
 import { Usuario } from '@prisma/client';
-import { ConflictException, NotFoundException, Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuariosService {
-  constructor(private readonly usuariosRepository: UsuariosRepository) {}
+  constructor(
+    private readonly usuariosRepository: UsuariosRepository,
+    private readonly instituicoesService: InstituicoesService
+  ) {}
   
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
+    // Verifica se a instituicao existe
+    await this.instituicoesService.findOne(createUsuarioDto.instituicaoId)
+
     const existingUser = await this.usuariosRepository.findOneByEmail(createUsuarioDto.email);
     if (existingUser) throw new ConflictException('Esse e-mail já foi cadastrado.');
 

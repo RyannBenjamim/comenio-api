@@ -8,6 +8,6 @@ import { AlunosModule } from './submodules/alunos/alunos.module';
   controllers: [UsuariosController],
   providers: [UsuariosService, UsuariosRepository],
   imports: [forwardRef(() => AlunosModule)],
-  exports: [UsuariosRepository]
+  exports: [UsuariosService]
 })
 export class UsuariosModule {}
