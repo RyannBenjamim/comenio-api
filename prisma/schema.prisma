@@ -11,7 +11,7 @@ model Instituicao {
   id        String   @id @default(uuid())
   nome      String
   telefone  String
-  cnpj      String
+  cnpj      String @unique
   endereco  String
   usuarios  Usuario[]
 
@@ -72,8 +72,8 @@ model Moderador {
 
 model Professor {
   userId       String  @id
-  matricula    String
-  statusContrato String
+  matricula    String?
+  statusContrato StatusContrato
   cargaHoraria Int
   usuario      Usuario @relation(fields: [userId], references: [id])
   materias     Materia[]
@@ -83,6 +83,13 @@ model Professor {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum StatusContrato {
+  ATIVO
+  SUSPENSO
+  AFASTADO
+  ENCERRADO
 }
 
 model Responsavel {
@@ -98,7 +105,7 @@ model Responsavel {
 
 model Aluno {
   userId         String  @id
-  matricula      String
+  matricula      String?
   turmaId        String
   statusMatricula String
   usuario        Usuario @relation(fields: [userId], references: [id])
