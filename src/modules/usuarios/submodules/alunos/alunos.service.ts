@@ -1,8 +1,9 @@
 import { UsuariosService } from './../../usuarios.service';
 import { CreateAlunoDto } from './dto/create-aluno.dto';
 import { AlunosRepository } from './alunos.repository';
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { Aluno } from '@prisma/client';
+import { UpdateAlunoDto } from './dto/update-aluno.dto';
 
 @Injectable()
 export class AlunosService {
@@ -24,5 +25,12 @@ export class AlunosService {
     
     const createdAluno = await this.alunosRepository.create(createAlunoDto);
     return createdAluno
+  }
+
+  async update(id: string, updateAlunoDto: UpdateAlunoDto): Promise<Aluno> {
+    const existingAluno = await this.alunosRepository.findOne({ userId: id });
+    if (!existingAluno) throw new NotFoundException('Aluno não encontrado.');
+    const updatedAluno = await this.alunosRepository.update({ userId: id }, updateAlunoDto);
+    return updatedAluno;
   }
 }
