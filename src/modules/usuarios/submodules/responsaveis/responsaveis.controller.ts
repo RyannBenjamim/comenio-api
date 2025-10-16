@@ -4,7 +4,7 @@ import { ResponsaveisService } from './responsaveis.service';
 import type { ApiResponse } from '../../../../common/interfaces/ApiResponse';
 import { Responsavel } from '@prisma/client';
 
-@Controller('responsaveis')
+@Controller()
 export class ResponsaveisController {
   constructor(private readonly responsaveisService: ResponsaveisService) {}
 

@@ -4,7 +4,7 @@ import { ProfessoresService } from './professores.service';
 import type { ApiResponse } from '../../../../common/interfaces/ApiResponse';
 import { Professor } from '@prisma/client';
 
-@Controller('professores')
+@Controller()
 export class ProfessoresController {
   constructor(private readonly professoresService: ProfessoresService) {}
 

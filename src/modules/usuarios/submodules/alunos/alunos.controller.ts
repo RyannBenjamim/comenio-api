@@ -4,7 +4,7 @@ import { CreateAlunoDto } from './dto/create-aluno.dto';
 import type { ApiResponse } from '../../../../common/interfaces/ApiResponse';
 import { Aluno } from '@prisma/client';
 
-@Controller('alunos')
+@Controller()
 export class AlunosController {
   constructor(private readonly alunosService: AlunosService) {}
 

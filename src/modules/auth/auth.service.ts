@@ -1,26 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { UsuariosRepository } from '../usuarios/usuarios.repository';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(
+    private readonly userRepository: UsuariosRepository,
+    private readonly jwtService: JwtService
+  ) {}
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async signin(email: string, password: string): Promise<{ access_token: string }> {
+    const user = await this.userRepository.findOneByEmail(email)
+    if (!user) throw new NotFoundException('Credenciais inválidas.');
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    const passwordMath = await bcrypt.compare(password, user.senha);
+    if (!passwordMath) throw new UnauthorizedException('Credenciais inválidas.');
+    
+    const payload = { id: user.id, role: user.cargo }
+    const token = await this.jwtService.signAsync(payload)
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    return { access_token: token }
   }
 }
