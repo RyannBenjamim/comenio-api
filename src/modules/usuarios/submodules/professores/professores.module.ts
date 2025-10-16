@@ -9,4 +9,4 @@ import { ProfessoresRepository } from './professores.repository';
   providers: [ProfessoresService, ProfessoresRepository],
   imports: [forwardRef(() => UsuariosModule)]
 })
-export class AlunosModule {}
+export class ProfessoresModule {}

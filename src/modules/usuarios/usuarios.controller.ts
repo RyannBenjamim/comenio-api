@@ -8,7 +8,7 @@ import { sanitizeUser } from '../../common/utils/sanitizeUser';
 import type { ApiResponse } from '../../common/interfaces/ApiResponse';
 import type { AuthenticatedRequest } from '../../common/interfaces/AuthenticatedRequest';
 
-@Controller('usuarios')
+@Controller()
 export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 

@@ -4,7 +4,7 @@ import { ModeradoresService } from './moderadores.service';
 import type { ApiResponse } from '../../../../common/interfaces/ApiResponse';
 import { Moderador } from '@prisma/client';
 
-@Controller('moderadores')
+@Controller()
 export class ModeradoresController {
   constructor(private readonly moderadoresService: ModeradoresService) {}
 

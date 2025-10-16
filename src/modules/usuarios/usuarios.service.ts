@@ -22,7 +22,11 @@ export class UsuariosService {
 
     const hashPassword = await bcrypt.hash(createUsuarioDto.senha, 10);
 
-    const createdUser = await this.usuariosRepository.create({...createUsuarioDto, senha: hashPassword});
+    const createdUser = await this.usuariosRepository.create({
+      ...createUsuarioDto, 
+      senha: hashPassword,
+      dataNascimento: new Date(createUsuarioDto.dataNascimento)
+    });
     return createdUser;
   }
 

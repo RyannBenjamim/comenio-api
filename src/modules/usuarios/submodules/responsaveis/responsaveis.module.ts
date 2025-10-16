@@ -9,4 +9,4 @@ import { ResponsaveisRepository } from './responsaveis.repository';
   providers: [ResponsaveisService, ResponsaveisRepository],
   imports: [forwardRef(() => UsuariosModule)]
 })
-export class AlunosModule {}
+export class ResponsaveisModule {}
