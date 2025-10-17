@@ -129,10 +129,16 @@ model AlunosResponsavel {
   updatedAt DateTime @updatedAt
 }
 
+enum Periodo {
+  MANHA
+  TARDE
+  NOITE
+}
+
 model Turma {
   id         String   @id @default(uuid())
   titulo     String
-  periodo    String
+  periodo    Periodo
   alunos     Aluno[]
   professores ProfessoresTurma[]
   comunidades Comunidade[]

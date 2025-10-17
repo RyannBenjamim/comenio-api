@@ -6,8 +6,8 @@ import { ComunidadesModule } from './modules/comunidades/comunidades.module';
 import { AtividadesModule } from './modules/atividades/atividades.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { InstituicoesModule } from './modules/instituicoes/instituicoes.module';
-import { AcademicoModule } from './modules/academico/academico.module';
 import { PrismaModule } from './database/prisma.module';
+import { TurmasModule } from './modules/academico/turmas/turmas.module';
 
 @Module({
   imports: [
@@ -18,8 +18,8 @@ import { PrismaModule } from './database/prisma.module';
     ComunidadesModule, 
     AtividadesModule, 
     PostsModule, 
-    InstituicoesModule, 
-    AcademicoModule
+    InstituicoesModule,
+    TurmasModule
   ],
   controllers: [],
   providers: [],
