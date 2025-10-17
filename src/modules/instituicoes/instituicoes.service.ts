@@ -33,8 +33,9 @@ export class InstituicoesService {
   }
 
   async remove(id: string): Promise<Instituicao> {
+    const existingInstitution = await this.instituicoesRepository.findOne({ id });
+    if (!existingInstitution) throw new NotFoundException('Instituição não encontrada.');
     const deletedInstitution = await this.instituicoesRepository.delete({ id });
-    if (!deletedInstitution) throw new NotFoundException('Instituição não encontrada.');
     return deletedInstitution;
   }
 }

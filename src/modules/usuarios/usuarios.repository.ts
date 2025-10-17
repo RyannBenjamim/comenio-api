@@ -4,10 +4,29 @@ import { Prisma, Usuario } from '@prisma/client';
 import { AbstractRepository } from '../../common/repositories/AbstractRepository';
 
 const defaultUserInclude: Prisma.UsuarioInclude = {
-  aluno: true,    
-  moderador: true,     
-  professor: true,     
-  responsavel: true,   
+  aluno: {
+    select: {
+      matricula: true,
+      turmaId: true,
+      statusMatricula: true
+    }
+  },    
+  moderador: {
+    select: { setor: true }
+  },     
+  professor: {
+    select: {
+      matricula: true,
+      statusContrato: true,
+      cargaHoraria: true
+    }
+  },     
+  responsavel: {
+    select: {
+      grauParentesco: true,
+      cpf: true
+    }
+  },   
 };
 
 @Injectable()

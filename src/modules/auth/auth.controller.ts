@@ -11,7 +11,7 @@ export class AuthController {
   async signin(
     @Body(new ValidationPipe()) body: SigninDto
   ): Promise<{ access_token: string }> {
-    const response = await this.authService.signin(body.email, body.password);
+    const response = await this.authService.signin(body.email, body.senha);
     return { access_token: response.access_token };
   }
 }

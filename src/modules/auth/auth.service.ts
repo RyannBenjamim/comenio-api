@@ -10,11 +10,11 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  async signin(email: string, password: string): Promise<{ access_token: string }> {
+  async signin(email: string, senha: string): Promise<{ access_token: string }> {
     const user = await this.userRepository.findOneByEmail(email)
     if (!user) throw new NotFoundException('Credenciais inválidas.');
 
-    const passwordMath = await bcrypt.compare(password, user.senha);
+    const passwordMath = await bcrypt.compare(senha, user.senha);
     if (!passwordMath) throw new UnauthorizedException('Credenciais inválidas.');
     
     const payload = { id: user.id, role: user.cargo }

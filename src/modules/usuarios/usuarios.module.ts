@@ -47,6 +47,6 @@ import { ProfessoresModule } from './submodules/professores/professores.module';
       },
     ]),
   ],
-  exports: [UsuariosService]
+  exports: [UsuariosService, UsuariosRepository]
 })
 export class UsuariosModule {}
