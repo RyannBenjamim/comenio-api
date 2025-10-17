@@ -43,12 +43,12 @@ export class UsuariosController {
     }
   }
 
-  @Patch('me') 
+  @Patch(':id') 
   async update(
-    @Request() req: AuthenticatedRequest,
+    @Param('id', ValidateUUIDPipe) id: string,
     @Body(new ValidationPipe()) updateUsuarioDto: UpdateUsuarioDto
   ): Promise<ApiResponse<Omit<Usuario, 'senha'>>> {
-    const response = await this.usuariosService.update(req.user.id, updateUsuarioDto);
+    const response = await this.usuariosService.update(id, updateUsuarioDto);
     return {
       message: 'Usuário(a) atualizado(a) com sucesso.',
       data: sanitizeUser(response)

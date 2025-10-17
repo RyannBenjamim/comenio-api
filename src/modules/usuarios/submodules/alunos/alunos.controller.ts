@@ -1,10 +1,10 @@
-import { Body, Controller, Patch, Post, ValidationPipe, Request } from '@nestjs/common';
+import { Body, Controller, Patch, Post, ValidationPipe, Param } from '@nestjs/common';
 import { AlunosService } from './alunos.service';
 import { CreateAlunoDto } from './dto/create-aluno.dto';
 import type { ApiResponse } from '../../../../common/interfaces/ApiResponse';
 import { Aluno } from '@prisma/client';
-import type { AuthenticatedRequest } from '../../../../common/interfaces/AuthenticatedRequest'
 import { UpdateAlunoDto } from './dto/update-aluno.dto';
+import { ValidateUUIDPipe } from 'src/common/pipes/ValideUUIDPipe';
 
 @Controller()
 export class AlunosController {
@@ -21,12 +21,12 @@ export class AlunosController {
     }
   }
 
-  @Patch('me') 
+  @Patch(':id') 
   async update(
-    @Request() req: AuthenticatedRequest,
+    @Param('id', ValidateUUIDPipe) id: string,
     @Body(new ValidationPipe()) updateAlunoDto: UpdateAlunoDto
   ): Promise<ApiResponse<Aluno>> {
-    const response = await this.alunosService.update(req.user.id, updateAlunoDto);
+    const response = await this.alunosService.update(id, updateAlunoDto);
     return {
       message: 'Aluno(a) atualizado(a) com sucesso.',
       data: response

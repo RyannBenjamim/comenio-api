@@ -1,7 +1,8 @@
 import { UsuariosService } from './../../usuarios.service';
 import { CreateResponsavelDto } from './dto/create-responsavel.dto';
+import { UpdateResponsavelDto } from './dto/update-responsavel.dto';
 import { ResponsaveisRepository } from './responsaveis.repository';
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { Responsavel } from '@prisma/client';
 
 @Injectable()
@@ -20,5 +21,12 @@ export class ResponsaveisService {
 
     const createdResponsavel = await this.responsaveisRepository.create(createResponsavelDto);
     return createdResponsavel;
+  }
+
+  async update(id: string, updateResponsavelDto: UpdateResponsavelDto): Promise<Responsavel> {
+    const existingResponsavel = await this.responsaveisRepository.findOne({ userId: id });
+    if (!existingResponsavel) throw new NotFoundException('Responsável não encontrado.');
+    const updatedResponsavel = await this.responsaveisRepository.update({ userId: id }, updateResponsavelDto);
+    return updatedResponsavel;
   }
 }
