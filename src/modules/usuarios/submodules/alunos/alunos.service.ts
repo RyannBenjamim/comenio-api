@@ -20,7 +20,7 @@ export class AlunosService {
 
     // Verifica se já existe um aluno cadastrado com esse userId
     const existingAluno = await this.alunosRepository.findOne({ userId: createAlunoDto.userId });
-    if (existingAluno) throw new ConflictException('Aluno já cadastrado para esse usuário.')
+    if (existingAluno) throw new ConflictException('Aluno já cadastrado para esse usuário.');
 
     // Verifica se a turma existe
     await this.turmasService.findOne(createAlunoDto.turmaId);
