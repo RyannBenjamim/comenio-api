@@ -1,9 +1,10 @@
+import { EnrollDto } from './dto/enroll.dto';
 import { UsuariosService } from '../../usuarios/usuarios.service';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { MateriasRepository } from './materias.repository';
 import { CreateMateriaDto } from './dto/create-materia.dto';
 import { UpdateMateriaDto } from './dto/update-materia.dto';
-import { Materia } from '@prisma/client';
+import { AlunosMateria, Materia } from '@prisma/client';
 
 @Injectable()
 export class MateriasService {
@@ -18,7 +19,7 @@ export class MateriasService {
 
     // Verifica se o id é realmente de um professor
     if (existingTeacher.cargo !== 'PROFESSOR') {
-      throw new ForbiddenException('Apenas professores podem ser cadastrados a uma materia.')
+      throw new ForbiddenException('Apenas professores podem ser cadastrados a uma materia.');
     }
     
     const createdSubject = await this.materiasRepository.create(createMateriaDto);
@@ -50,5 +51,22 @@ export class MateriasService {
 
     const deletedSubject = await this.materiasRepository.delete({ id });
     return deletedSubject;
+  }
+
+  async enrollAlunoInMateria(enrollDto: EnrollDto): Promise<void> {
+    // Verifica se o id do aluno existe
+    const existingStudent = await this.usuariosService.findOne(enrollDto.alunoId)
+
+    // Verifica se o id é realmente de um aluno
+    if (existingStudent.cargo !== 'ALUNO') {
+      throw new ForbiddenException('Apenas alunos podem ser cadastrados em uma materia.');
+    }
+
+    // Verifica se a matéria existe
+    const existingSubject = await this.materiasRepository.findOne({ id: enrollDto.materiaId });
+    if (!existingSubject) throw new NotFoundException('Matéria não encontrada.');
+
+    // Matricula aluno na matéria
+    await this.materiasRepository.enrollAlunoInMateria(enrollDto);
   }
 }

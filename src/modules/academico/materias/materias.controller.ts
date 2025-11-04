@@ -5,6 +5,7 @@ import { ValidateUUIDPipe } from '../../../common/pipes/ValideUUIDPipe';
 import { CreateMateriaDto } from './dto/create-materia.dto';
 import { UpdateMateriaDto } from './dto/update-materia.dto';
 import type { ApiResponse } from '../../../common/interfaces/ApiResponse';
+import { EnrollDto } from './dto/enroll.dto';
 
 @Controller('materias')
 export class MateriasController {
@@ -62,5 +63,15 @@ export class MateriasController {
       message: `Matéria ${response.titulo} deletada com sucesso.`,
       data: response
     };
+  }
+
+  @Post('enroll')
+  async enrollAlunoInMateria(
+    @Body(new ValidationPipe()) enrollDto: EnrollDto
+  ): Promise<ApiResponse> {
+    await this.enrollAlunoInMateria(enrollDto);
+    return {
+      message: 'Matrícula efetuada com sucesso.'
+    }
   }
 }
