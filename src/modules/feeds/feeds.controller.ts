@@ -1,34 +1,67 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { FeedsService } from './feeds.service';
+import { Feed } from '@prisma/client';
+import { ValidateUUIDPipe } from '../../common/pipes/ValideUUIDPipe';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
+import type { ApiResponse } from '../../common/interfaces/ApiResponse';
 
 @Controller('feeds')
 export class FeedsController {
   constructor(private readonly feedsService: FeedsService) {}
 
   @Post()
-  create(@Body() createFeedDto: CreateFeedDto) {
-    return this.feedsService.create(createFeedDto);
+  async create(
+    @Body(new ValidationPipe()) createFeedDto: CreateFeedDto
+  ): Promise<ApiResponse<Feed>> {
+    const response = await this.feedsService.create(createFeedDto);
+    return {
+      message: 'Feed criado com sucesso.',
+      data: response
+    };
   }
 
   @Get()
-  findAll() {
-    return this.feedsService.findAll();
+  async findAll(): Promise<ApiResponse<Feed[]>> {
+    const response = await this.feedsService.findAll();
+    return {
+      message: 'Feeds listados com sucesso.',
+      data: response
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.feedsService.findOne(+id);
+  async findOne(
+    @Param('id', ValidateUUIDPipe) id: string
+  ): Promise<ApiResponse<Feed>> {
+    const response = await this.feedsService.findOne(id);
+    return {
+      message: 'Feed buscado com sucesso.',
+      data: response
+    };
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFeedDto: UpdateFeedDto) {
-    return this.feedsService.update(+id, updateFeedDto);
+  async update(
+    @Param('id', ValidateUUIDPipe) id: string,
+    @Body(new ValidationPipe()) updateFeedDto: UpdateFeedDto
+  ): Promise<ApiResponse<Feed>> {
+    const response = await this.feedsService.update(id, updateFeedDto);
+    return {
+      message: 'Feed atualizado com sucesso.',
+      data: response
+    };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.feedsService.remove(+id);
+  async remove(
+    @Param('id', ValidateUUIDPipe) id: string
+  ): Promise<ApiResponse<Feed>> {
+    const response = await this.feedsService.remove(id);
+    return {
+      message: `Feed ${response.titulo} deletado com sucesso.`,
+      data: response
+    };
   }
 }
+

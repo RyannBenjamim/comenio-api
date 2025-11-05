@@ -19,7 +19,8 @@ import { TurmasModule } from './modules/academico/turmas/turmas.module';
     AtividadesModule, 
     PostsModule, 
     InstituicoesModule,
-    TurmasModule
+    TurmasModule,
+    FeedsModule
   ],
   controllers: [],
   providers: [],
