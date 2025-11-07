@@ -1,27 +1,46 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
-export abstract class AbstractRepository<T> {
+export abstract class AbstractRepository<
+  TModel,
+  TDelegate extends {
+    findMany: (args?: any) => Promise<TModel[]>;
+    findUnique: (args: any) => Promise<TModel | null>;
+    create: (args: any) => Promise<TModel>;
+    update: (args: any) => Promise<TModel>;
+    delete: (args: any) => Promise<TModel>;
+  }
+> {
   constructor(protected readonly prisma: PrismaClient) {}
 
-  abstract get model(): any; 
+  abstract get model(): TDelegate;
 
-  async findAll(args?: Prisma.SelectSubset<any, any>): Promise<T[]> {
+  async findAll(
+    args?: Parameters<TDelegate['findMany']>[0]
+  ): Promise<TModel[]> {
     return this.model.findMany(args);
   }
 
-  async findOne(where: any): Promise<T | null> {
-    return this.model.findUnique({ where });
+  async findOne(
+    args: Parameters<TDelegate['findUnique']>[0]
+  ): Promise<TModel | null> {
+    return this.model.findUnique(args);
   }
 
-  async create(data: any): Promise<T> {
-    return this.model.create({ data });
+  async create(
+    args: Parameters<TDelegate['create']>[0]
+  ): Promise<TModel> {
+    return this.model.create(args);
   }
 
-  async update(where: any, data: any): Promise<T> {
-    return this.model.update({ where, data });
+  async update(
+    args: Parameters<TDelegate['update']>[0]
+  ): Promise<TModel> {
+    return this.model.update(args);
   }
 
-  async delete(where: any): Promise<T> {
-    return this.model.delete({ where });
+  async delete(
+    args: Parameters<TDelegate['delete']>[0]
+  ): Promise<TModel> {
+    return this.model.delete(args);
   }
 }

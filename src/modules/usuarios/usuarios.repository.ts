@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './../../database/prisma.service';
-import { Prisma, Usuario } from '@prisma/client';
+import { PrismaClient ,Prisma, Usuario } from '@prisma/client';
 import { AbstractRepository } from '../../common/repositories/AbstractRepository';
 
 const defaultUserInclude: Prisma.UsuarioInclude = {
@@ -30,7 +30,7 @@ const defaultUserInclude: Prisma.UsuarioInclude = {
 };
 
 @Injectable()
-export class UsuariosRepository extends AbstractRepository<Usuario> {
+export class UsuariosRepository extends AbstractRepository<Usuario, PrismaClient['usuario']> {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }

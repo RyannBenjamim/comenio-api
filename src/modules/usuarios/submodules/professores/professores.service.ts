@@ -16,17 +16,23 @@ export class ProfessoresService {
     // Verifa se o usuário existe
     await this.usuariosService.findOne(createProfessorDto.userId);
 
-    const existingProfessor = await this.professoresRepository.findOne({ userId: createProfessorDto.userId });
+    const existingProfessor = await this.professoresRepository.findOne({ where: {
+      userId: createProfessorDto.userId
+    }});
     if (existingProfessor) throw new ConflictException('Professor já cadastrado para esse usuário.')
     
-    const createdProfessor = await this.professoresRepository.create(createProfessorDto);
+    const createdProfessor = await this.professoresRepository.create({ data: createProfessorDto });
     return createdProfessor
   }
 
   async update(id: string, updateProfessorDto: UpdateProfessorDto): Promise<Professor> {
-    const existingProfessor = await this.professoresRepository.findOne({ userId: id });
+    const existingProfessor = await this.professoresRepository.findOne({ where: { userId: id } });
     if (!existingProfessor) throw new NotFoundException('Professor não encontrado.');
-    const updatedProfessor = await this.professoresRepository.update({ userId: id }, updateProfessorDto);
+    
+    const updatedProfessor = await this.professoresRepository.update({
+      where: { userId: id },
+      data: updateProfessorDto
+    });
     return updatedProfessor;
   }
 }

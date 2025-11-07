@@ -11,13 +11,5 @@ export class CreateComunidadeDto {
 
   @IsString()
   @IsNotEmpty()
-  materiaId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  professorId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  turmaId: string;
+  aulaId: string;
 }

@@ -1,10 +1,10 @@
-import { Aluno } from "@prisma/client";
+import { PrismaClient, Aluno } from "@prisma/client";
 import { AbstractRepository } from "../../../../common/repositories/AbstractRepository";
 import { PrismaService } from "../../../../database/prisma.service";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class AlunosRepository extends AbstractRepository<Aluno> {
+export class AlunosRepository extends AbstractRepository<Aluno, PrismaClient['aluno']> {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }

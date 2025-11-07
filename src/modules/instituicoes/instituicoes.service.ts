@@ -9,7 +9,7 @@ export class InstituicoesService {
   constructor(private readonly instituicoesRepository: InstituicoesRepository) {}
 
   async create(createInstituicaoDto: CreateInstituicaoDto): Promise<Instituicao> {
-    const createdInstitution = await this.instituicoesRepository.create(createInstituicaoDto);
+    const createdInstitution = await this.instituicoesRepository.create({ data: createInstituicaoDto });
     return createdInstitution;
   }
 
@@ -19,23 +19,26 @@ export class InstituicoesService {
   }
 
   async findOne(id: string): Promise<Instituicao> {
-    const existingInstitution = await this.instituicoesRepository.findOne({ id });
+    const existingInstitution = await this.instituicoesRepository.findOne({ where: { id } });
     if (!existingInstitution) throw new NotFoundException('Instituição não encontrada.');
     return existingInstitution;
   }
 
   async update(id: string, updateInstituicaoDto: UpdateInstituicaoDto): Promise<Instituicao> {
-    const existingInstitution = await this.instituicoesRepository.findOne({ id });
+    const existingInstitution = await this.instituicoesRepository.findOne({ where: { id } });
     if (!existingInstitution) throw new NotFoundException('Instituição não encontrada.');
     
-    const updatedInstitution = await this.instituicoesRepository.update({ id }, updateInstituicaoDto);
+    const updatedInstitution = await this.instituicoesRepository.update({
+      where: { id },
+      data: updateInstituicaoDto
+    });
     return updatedInstitution;
   }
 
   async remove(id: string): Promise<Instituicao> {
-    const existingInstitution = await this.instituicoesRepository.findOne({ id });
+    const existingInstitution = await this.instituicoesRepository.findOne({ where: { id } });
     if (!existingInstitution) throw new NotFoundException('Instituição não encontrada.');
-    const deletedInstitution = await this.instituicoesRepository.delete({ id });
+    const deletedInstitution = await this.instituicoesRepository.delete({ where: { id } });
     return deletedInstitution;
   }
 }

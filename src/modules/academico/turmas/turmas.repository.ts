@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { Turma } from "@prisma/client";
+import { PrismaClient ,Turma } from "@prisma/client";
 import { AbstractRepository } from "../../../common/repositories/AbstractRepository";
 import { PrismaService } from "../../../database/prisma.service";
 
 @Injectable()
-export class TurmasRepository extends AbstractRepository<Turma> {
+export class TurmasRepository extends AbstractRepository<Turma, PrismaClient['turma']> {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }

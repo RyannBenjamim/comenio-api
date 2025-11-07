@@ -9,7 +9,7 @@ export class TurmasService {
   constructor(private readonly turmasRepository: TurmasRepository) {}
 
   async create(createTurmaDto: CreateTurmaDto): Promise<Turma> {
-    const createdClass = await this.turmasRepository.create(createTurmaDto);
+    const createdClass = await this.turmasRepository.create({ data: createTurmaDto });
     return createdClass;
   }
 
@@ -19,24 +19,27 @@ export class TurmasService {
   }
 
   async findOne(id: string): Promise<Turma> {
-    const existingClass = await this.turmasRepository.findOne({ id });
+    const existingClass = await this.turmasRepository.findOne({ where: { id } });
     if (!existingClass) throw new NotFoundException('Turma não encontrada.');
     return existingClass;
   }
 
   async update(id: string, updateTurmaDto: UpdateTurmaDto): Promise<Turma> {
-    const existingClass = await this.turmasRepository.findOne({ id });
+    const existingClass = await this.turmasRepository.findOne({ where: { id } });
     if (!existingClass) throw new NotFoundException('Turma não encontrada.');
 
-    const updatedClass = await this.turmasRepository.update({ id }, updateTurmaDto);
+    const updatedClass = await this.turmasRepository.update({
+      where: { id },
+      data: updateTurmaDto
+    });
     return updatedClass;
   }
 
   async remove(id: string): Promise<Turma> {
-    const existingClass = await this.turmasRepository.findOne({ id });
+    const existingClass = await this.turmasRepository.findOne({ where: { id } });
     if (!existingClass) throw new NotFoundException('Turma não encontrada.');
 
-    const deletedClass = await this.turmasRepository.delete({ id });
+    const deletedClass = await this.turmasRepository.delete({ where: { id } });
     return deletedClass;
   }
 }

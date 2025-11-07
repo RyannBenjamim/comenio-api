@@ -16,17 +16,23 @@ export class ModeradoresService {
     // Verifica se o usuário existe
     await this.usuariosService.findOne(createModeradorDto.userId);
 
-    const existingModerador = await this.moderadoresRepository.findOne({ userId: createModeradorDto.userId });
+    const existingModerador = await this.moderadoresRepository.findOne({ where: {
+      userId: createModeradorDto.userId
+    }});
     if (existingModerador) throw new ConflictException('Moderador já cadastrado para esse usuário.');
 
-    const createdModerador = await this.moderadoresRepository.create(createModeradorDto);
+    const createdModerador = await this.moderadoresRepository.create({ data: createModeradorDto });
     return createdModerador;
   }
 
   async update(id: string, updateModeradorDto: UpdateModeradorDto): Promise<Moderador> {
-    const existingModerador = await this.moderadoresRepository.findOne({ userId: id });
+    const existingModerador = await this.moderadoresRepository.findOne({ where: { userId: id } });
     if (!existingModerador) throw new NotFoundException('Moderador não encontrado.');
-    const updatedModerador = await this.moderadoresRepository.update({ userId: id }, updateModeradorDto);
+    
+    const updatedModerador = await this.moderadoresRepository.update({
+      where: { userId: id },
+      data: updateModeradorDto
+    });
     return updatedModerador;
   }
 }

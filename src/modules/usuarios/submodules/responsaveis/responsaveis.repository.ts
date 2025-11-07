@@ -1,11 +1,11 @@
-import { AlunosResponsavel, Responsavel } from "@prisma/client";
+import { PrismaClient ,AlunosResponsavel, Responsavel } from "@prisma/client";
 import { AbstractRepository } from "../../../../common/repositories/AbstractRepository";
 import { PrismaService } from "../../../../database/prisma.service";
 import { Injectable } from "@nestjs/common";
 import { AddResponsavelDto } from "./dto/addResponsavel.dto";
 
 @Injectable()
-export class ResponsaveisRepository extends AbstractRepository<Responsavel> {
+export class ResponsaveisRepository extends AbstractRepository<Responsavel, PrismaClient['responsavel']> {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }

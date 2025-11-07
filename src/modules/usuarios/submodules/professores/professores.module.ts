@@ -7,6 +7,7 @@ import { ProfessoresRepository } from './professores.repository';
 @Module({
   controllers: [ProfessoresController],
   providers: [ProfessoresService, ProfessoresRepository],
-  imports: [forwardRef(() => UsuariosModule)]
+  imports: [forwardRef(() => UsuariosModule)],
+  exports: [ProfessoresService]
 })
 export class ProfessoresModule {}

@@ -16,17 +16,25 @@ export class ResponsaveisService {
     // Verifica se o usuário existe
     await this.usuariosService.findOne(createResponsavelDto.userId);
 
-    const existingResponsavel = await this.responsaveisRepository.findOne({ userId: createResponsavelDto.userId });
+    const existingResponsavel = await this.responsaveisRepository.findOne({ where: {
+      userId: createResponsavelDto.userId
+    }});
     if (existingResponsavel) throw new ConflictException('Responsável já cadastrado para esse usuário.');
 
-    const createdResponsavel = await this.responsaveisRepository.create(createResponsavelDto);
+    const createdResponsavel = await this.responsaveisRepository.create({ data: createResponsavelDto });
     return createdResponsavel;
   }
 
   async update(id: string, updateResponsavelDto: UpdateResponsavelDto): Promise<Responsavel> {
-    const existingResponsavel = await this.responsaveisRepository.findOne({ userId: id });
+    const existingResponsavel = await this.responsaveisRepository.findOne({ where: {
+      userId: updateResponsavelDto.userId
+    }});
     if (!existingResponsavel) throw new NotFoundException('Responsável não encontrado.');
-    const updatedResponsavel = await this.responsaveisRepository.update({ userId: id }, updateResponsavelDto);
+
+    const updatedResponsavel = await this.responsaveisRepository.update({
+      where: { userId: id },
+      data: updateResponsavelDto
+    });
     return updatedResponsavel;
   }
 }

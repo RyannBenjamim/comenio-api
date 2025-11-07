@@ -22,11 +22,13 @@ export class UsuariosService {
 
     const hashPassword = await bcrypt.hash(createUsuarioDto.senha, 10);
 
-    const createdUser = await this.usuariosRepository.create({
+    const modifiedUser = {
       ...createUsuarioDto, 
       senha: hashPassword,
       dataNascimento: new Date(createUsuarioDto.dataNascimento)
-    });
+    }
+
+    const createdUser = await this.usuariosRepository.create({ data: modifiedUser });
     return createdUser;
   }
 
@@ -44,14 +46,17 @@ export class UsuariosService {
   async update(id: string, updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
     const existingUser = await this.usuariosRepository.findOne({ id });
     if (!existingUser) throw new NotFoundException('Usuário não encontrado.');
-    const updatedUser = await this.usuariosRepository.update({ id }, updateUsuarioDto);
+    const updatedUser = await this.usuariosRepository.update({
+      where: { id },
+      data: updateUsuarioDto
+    });
     return updatedUser;
   }
 
   async remove(id: string): Promise<Usuario> {
     const existingUser = await this.usuariosRepository.findOne({ id });
     if (!existingUser) throw new NotFoundException('Usuário não encontrado.');
-    const deletedUser = await this.usuariosRepository.delete({ id });
+    const deletedUser = await this.usuariosRepository.delete({ where: { id } });
     return deletedUser;
   }
 }

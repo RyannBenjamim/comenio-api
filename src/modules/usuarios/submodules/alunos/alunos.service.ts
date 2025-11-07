@@ -19,20 +19,26 @@ export class AlunosService {
     await this.usuariosService.findOne(createAlunoDto.userId);
 
     // Verifica se já existe um aluno cadastrado com esse userId
-    const existingAluno = await this.alunosRepository.findOne({ userId: createAlunoDto.userId });
+    const existingAluno = await this.alunosRepository.findOne({ where: {
+      userId: createAlunoDto.userId
+    }});
     if (existingAluno) throw new ConflictException('Aluno já cadastrado para esse usuário.');
 
     // Verifica se a turma existe
     await this.turmasService.findOne(createAlunoDto.turmaId);
     
-    const createdAluno = await this.alunosRepository.create(createAlunoDto);
+    const createdAluno = await this.alunosRepository.create({ data: createAlunoDto });
     return createdAluno
   }
 
   async update(id: string, updateAlunoDto: UpdateAlunoDto): Promise<Aluno> {
-    const existingAluno = await this.alunosRepository.findOne({ userId: id });
+    const existingAluno = await this.alunosRepository.findOne({ where: { userId: id } });
     if (!existingAluno) throw new NotFoundException('Aluno não encontrado.');
-    const updatedAluno = await this.alunosRepository.update({ userId: id }, updateAlunoDto);
+
+    const updatedAluno = await this.alunosRepository.update({
+      where: { userId: id },
+      data: updateAlunoDto
+    });
     return updatedAluno;
   }
 }
