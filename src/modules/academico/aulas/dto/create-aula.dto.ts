@@ -1,9 +1,13 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class EnrollDto {
+export class CreateAulaDto {
   @IsString()
   @IsNotEmpty()
-  alunoId: string;
+  professorId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  turmaId: string;
 
   @IsString()
   @IsNotEmpty()

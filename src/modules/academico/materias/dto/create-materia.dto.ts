@@ -9,8 +9,4 @@ export class CreateMateriaDto {
   @IsEnum(MateriaTipo)
   @IsNotEmpty()
   tipo: MateriaTipo;
-
-  @IsString()
-  @IsNotEmpty()
-  professorId: string;
 }

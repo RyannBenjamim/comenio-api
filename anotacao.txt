@@ -1,0 +1,42 @@
+# PROFESSOR
+  - userId
+  - matricula
+  - statusContrato
+  - cargaHoraria
+
+# ALUNO
+  - userId
+  - matricula
+  - statusMatricula
+
+# MATERIA
+  - id
+  - titulo
+  - tipo (HUMANAS, EXATAS, NATUREZA, LINGUAGENS)
+
+# TURMA 
+  - id
+  - titulo
+  - periodo (MANHA, TARDE, NOITE)
+  
+# --------------- RELACIONAMENTOS ---------------
+
+# ALUNOS_TURMA
+  - alunoId 
+  - turmaId
+  - PK(alunoId, turmaId)
+
+# PROFESSORES_TURMA
+  - professorId
+  - turmaId
+  - PK(professorId, turmaId)
+
+# PROFESSORES_MATERIA
+  - professorId
+  - materiaId
+  - PK(professorId, materiaId)
+
+# TURMA_PROFESSORES_MATERIA (AULA)
+  - turmaId
+  - PK(professorId, materiaId)
+  - PK(turmaId, PK(professorId, materiaId))

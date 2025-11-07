@@ -71,15 +71,13 @@ model Moderador {
 }
 
 model Professor {
-  userId       String  @id
-  matricula    String?
+  userId         String  @id
+  matricula      String?
   statusContrato StatusContrato
-  cargaHoraria Int
-  usuario      Usuario @relation(fields: [userId], references: [id])
-  materias     Materia[]
-  turmas       ProfessoresTurma[]
-  correcoes    Correcao[]
-  comunidades  Comunidade[]
+  cargaHoraria   Int
+  usuario        Usuario @relation(fields: [userId], references: [id])
+  aulas          Aula[]
+  correcoes      Correcao[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -93,10 +91,10 @@ enum StatusContrato {
 }
 
 model Responsavel {
-  userId           String  @id
-  grauParentesco   String
-  cpf              String
-  usuario          Usuario @relation(fields: [userId], references: [id])
+  userId             String  @id
+  grauParentesco     String
+  cpf                String
+  usuario            Usuario @relation(fields: [userId], references: [id])
   alunosResponsaveis AlunosResponsavel[]
 
   createdAt DateTime @default(now())
@@ -104,15 +102,14 @@ model Responsavel {
 }
 
 model Aluno {
-  userId         String  @id
-  matricula      String?
-  turmaId        String
-  statusMatricula String
-  usuario        Usuario @relation(fields: [userId], references: [id])
-  turma          Turma   @relation(fields: [turmaId], references: [id])
+  userId             String  @id
+  matricula          String?
+  turmaId            String
+  statusMatricula    String
+  usuario            Usuario @relation(fields: [userId], references: [id])
+  turma              Turma   @relation(fields: [turmaId], references: [id])
   alunosResponsaveis AlunosResponsavel[]
-  alunosMaterias AlunosMateria[]
-  resolucoes     Resolucao[]
+  resolucoes         Resolucao[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -136,25 +133,21 @@ enum Periodo {
 }
 
 model Turma {
-  id         String   @id @default(uuid())
-  titulo     String
-  periodo    Periodo
-  alunos     Aluno[]
-  professores ProfessoresTurma[]
-  comunidades Comunidade[]
+  id           String   @id @default(uuid())
+  titulo       String
+  periodo      Periodo
+  alunos       Aluno[]
+  aulas        Aula[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Materia {
-  id          String   @id @default(uuid())
-  titulo      String
-  tipo        MateriaTipo
-  professorId String
-  professor   Professor @relation(fields: [professorId], references: [userId])
-  alunosMaterias AlunosMateria[]
-  comunidade  Comunidade? 
+  id             String   @id @default(uuid())
+  titulo         String
+  tipo           MateriaTipo
+  aulas          Aula[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -167,51 +160,30 @@ enum MateriaTipo {
   LINGUAGENS
 }
 
-model AlunosMateria {
-  alunoId   String
-  materiaId String
-  aluno     Aluno   @relation(fields: [alunoId], references: [userId])
-  materia   Materia @relation(fields: [materiaId], references: [id])
-
-  @@id([alunoId, materiaId])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model ProfessoresTurma {
-  professorId String
-  turmaId     String
-  professor   Professor @relation(fields: [professorId], references: [userId])
-  turma       Turma     @relation(fields: [turmaId], references: [id])
-
-  @@id([professorId, turmaId])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Feed {
-  id        String   @id @default(uuid())
-  titulo    String
-  tipoPerfil Cargo
-  posts     Post[]
+model Aula {
+  id           String   @id @default(uuid())
+  professorId  String
+  turmaId      String
+  materiaId    String
+  professor    Professor @relation(fields: [professorId], references: [userId])
+  turma        Turma     @relation(fields: [turmaId], references: [id])
+  materia      Materia   @relation(fields: [materiaId], references: [id])
+  comunidade   Comunidade?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([professorId, turmaId, materiaId])
 }
 
 model Comunidade {
-  id          String   @id @default(uuid())
-  titulo      String
-  fotoCaminho String?
-  materiaId   String   @unique
-  professorId String
-  turmaId     String
-
-  materia     Materia @relation(fields: [materiaId], references: [id])
-  professor   Professor @relation(fields: [professorId], references: [userId])
-  turma       Turma    @relation(fields: [turmaId], references: [id])
-  atividades  Atividade[]
-  posts       Post[]
+  id           String   @id @default(uuid())
+  titulo       String
+  fotoCaminho  String?
+  aulaId       String   @unique
+  aula         Aula     @relation(fields: [aulaId], references: [id])
+  atividades   Atividade[]
+  posts        Post[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -254,6 +226,16 @@ model Correcao {
   pdfCaminho  String?
   resolucao   Resolucao @relation(fields: [resolucaoId], references: [id])
   professor   Professor @relation(fields: [professorId], references: [userId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Feed {
+  id        String   @id @default(uuid())
+  titulo    String
+  tipoPerfil Cargo
+  posts     Post[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
