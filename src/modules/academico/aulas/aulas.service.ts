@@ -23,6 +23,7 @@ export class AulasService {
     const existingTeacher = await this.usuariosService.findOne(createAulaDto.professorId);
     
     // Verifica se o id é realmente de um professor
+    // OBS -> Analisar se é realmente preciso ter esse bloco...
     if (existingTeacher.cargo !== 'PROFESSOR') {
       throw new ForbiddenException('Apenas professores podem ser cadastrados a uma materia.');
     }

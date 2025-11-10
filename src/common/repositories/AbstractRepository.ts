@@ -8,6 +8,7 @@ export abstract class AbstractRepository<
     create: (args: any) => Promise<TModel>;
     update: (args: any) => Promise<TModel>;
     delete: (args: any) => Promise<TModel>;
+    count: (args: any) => Promise<number>;
   }
 > {
   constructor(protected readonly prisma: PrismaClient) {}
@@ -42,5 +43,11 @@ export abstract class AbstractRepository<
     args: Parameters<TDelegate['delete']>[0]
   ): Promise<TModel> {
     return this.model.delete(args);
+  }
+
+  async count(
+    args: Parameters<TDelegate['count']>[0]
+  ): Promise<number> {
+    return this.model.count(args);
   }
 }

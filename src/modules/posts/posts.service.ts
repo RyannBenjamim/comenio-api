@@ -1,7 +1,7 @@
 import { ComunidadesService } from './../comunidades/comunidades.service';
 import { FeedsService } from './../feeds/feeds.service';
 import { UsuariosService } from './../usuarios/usuarios.service';
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -17,20 +17,21 @@ export class PostsService {
   ) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
+    const { userId, comunidadeId, feedId } = createPostDto;
+
     // Verifica se o usuário existe
-    await this.usuariosService.findOne(createPostDto.userId);
+    await this.usuariosService.findOne(userId);
 
-    if (createPostDto.comunidadeId && createPostDto.feedId) {
-      throw new ForbiddenException('Post deve ter só um vínculo: comunidade ou feed.');
+    if (!comunidadeId && !feedId) {
+      throw new BadRequestException('Post deve estar vinculado a uma comunidade ou feed.');
     }
 
-    if (createPostDto.comunidadeId) {
-      await this.comunidadesService.findOne(createPostDto.comunidadeId);
+    if (comunidadeId && feedId) {
+      throw new BadRequestException('Post deve ter só um vínculo: comunidade ou feed.');
     }
 
-    if (createPostDto.feedId) {
-      await this.feedsService.findOne(createPostDto.feedId);
-    }
+    if (comunidadeId) await this.comunidadesService.findOne(comunidadeId);
+    if (feedId) await this.feedsService.findOne(feedId);
 
     const createdPost = await this.postsRepository.create({ data: createPostDto });
     return createdPost;
@@ -38,11 +39,11 @@ export class PostsService {
 
   async findAll(comunidadeId?: string, feedId?: string): Promise<Post[]> {
     if (!comunidadeId && !feedId) {
-      throw new ForbiddenException('Pelo menos um parâmetro de query deve ser enviado.')
+      throw new BadRequestException('Pelo menos um parâmetro de query deve ser enviado.')
     }
 
     if (comunidadeId && feedId) {
-      throw new ForbiddenException('Apenas um parâmetro de query pode ser usado por vez.')
+      throw new BadRequestException('Apenas um parâmetro de query pode ser usado por vez.')
     }
 
     const args = comunidadeId ? { where: { comunidadeId } } : { where: { feedId } };
