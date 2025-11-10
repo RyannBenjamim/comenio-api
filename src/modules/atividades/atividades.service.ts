@@ -1,26 +1,52 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { AtividadesRepository } from './atividades.repository';
 import { CreateAtividadeDto } from './dto/create-atividade.dto';
 import { UpdateAtividadeDto } from './dto/update-atividade.dto';
+import { Atividade } from '@prisma/client';
+import { ComunidadesService } from '../comunidades/comunidades.service';
 
 @Injectable()
 export class AtividadesService {
-  create(createAtividadeDto: CreateAtividadeDto) {
-    return 'This action adds a new atividade';
+  constructor(
+    private readonly atividadesRepository: AtividadesRepository,
+    private readonly comunidadesService: ComunidadesService
+  ) {}
+
+  async create(createAtividadeDto: CreateAtividadeDto): Promise<Atividade> {
+    // Verifica se a comunidade existe
+    await this.comunidadesService.findOne(createAtividadeDto.comunidadeId);
+
+    const createdAtividade = await this.atividadesRepository.create({ data: createAtividadeDto });
+    return createdAtividade;
   }
 
-  findAll() {
-    return `This action returns all atividades`;
+  async findAll(): Promise<Atividade[]> {
+    const list = await this.atividadesRepository.findAll();
+    return list;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} atividade`;
+  async findOne(id: string): Promise<Atividade> {
+    const existingAtividade = await this.atividadesRepository.findOne({ where: { id } });
+    if (!existingAtividade) throw new NotFoundException('Atividade não encontrada.');
+    return existingAtividade;
   }
 
-  update(id: number, updateAtividadeDto: UpdateAtividadeDto) {
-    return `This action updates a #${id} atividade`;
+  async update(id: string, updateAtividadeDto: UpdateAtividadeDto): Promise<Atividade> {
+    const existingAtividade = await this.atividadesRepository.findOne({ where: { id } });
+    if (!existingAtividade) throw new NotFoundException('Atividade não encontrada.');
+
+    const updated = await this.atividadesRepository.update({
+      where: { id },
+      data: updateAtividadeDto
+    });
+    return updated;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} atividade`;
+  async remove(id: string): Promise<Atividade> {
+    const existingAtividade = await this.atividadesRepository.findOne({ where: { id } });
+    if (!existingAtividade) throw new NotFoundException('Atividade não encontrada.');
+
+    const deletedAtividade = await this.atividadesRepository.delete({ where: { id } });
+    return deletedAtividade;
   }
 }
