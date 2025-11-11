@@ -19,10 +19,10 @@ export class CorrecoesService {
     await this.resolucoesService.findOne(createCorrecaoDto.resolucaoId);
 
     // Verifica se o id do professor existe
-    const existingCorrecao = await this.usuariosService.findOne(createCorrecaoDto.professorId);
+    const existingTeacher = await this.usuariosService.findOne(createCorrecaoDto.professorId);
         
     // Verifica se o id é realmente de um professor
-    if (existingCorrecao.cargo !== 'PROFESSOR') {
+    if (existingTeacher.cargo !== 'PROFESSOR') {
       throw new ForbiddenException('Apenas professores podem corrigir uma atividade.');
     }
 
@@ -45,11 +45,11 @@ export class CorrecoesService {
     const existingCorrecao = await this.correcoesRepository.findOne({ where: { id } });
     if (!existingCorrecao) throw new NotFoundException('Correção não encontrada.');
 
-    const updated = await this.correcoesRepository.update({
+    const updatedCorrecao = await this.correcoesRepository.update({
       where: { id },
       data: updateCorrecaoDto
     });
-    return updated;
+    return updatedCorrecao;
   }
 
   async remove(id: string): Promise<Correcao> {

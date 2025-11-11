@@ -1,15 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ResolucoesRepository } from './resolucoes.repository';
 import { CreateResolucaoDto } from './dto/create-resolucao.dto';
 import { UpdateResolucaoDto } from './dto/update-resolucao.dto';
 import { Resolucao } from '@prisma/client';
 import { AtividadesService } from '../../atividades.service';
+import { UsuariosService } from '../../../usuarios/usuarios.service';
 
 @Injectable()
 export class ResolucoesService {
   constructor(
     private readonly resolucoesRepository: ResolucoesRepository,
-    private readonly atividadesService: AtividadesService
+    private readonly atividadesService: AtividadesService,
+    private readonly usuariosService: UsuariosService
   ) {}
 
   async create(createResolucaoDto: CreateResolucaoDto): Promise<Resolucao> {
@@ -17,10 +19,14 @@ export class ResolucoesService {
     await this.atividadesService.findOne(createResolucaoDto.atividadeId);
 
     // Verifica se o aluno existe
+    const existingAluno = await this.usuariosService.findOne(createResolucaoDto.alunoId);
 
-    const createdResolucao = await this.resolucoesRepository.create({
-      data: createResolucaoDto
-    });
+    // Verifica se o id é realmente de um aluno
+    if (existingAluno.cargo !== 'ALUNO') {
+      throw new ForbiddenException('Apenas alunos podem resolver uma atividade.');
+    }
+
+    const createdResolucao = await this.resolucoesRepository.create({ data: createResolucaoDto });
     return createdResolucao;
   }
 
@@ -39,11 +45,11 @@ export class ResolucoesService {
     const existingResolucao = await this.resolucoesRepository.findOne({ where: { id } });
     if (!existingResolucao) throw new NotFoundException('Resolução não encontrada.');
 
-    const updated = await this.resolucoesRepository.update({
+    const updatedResolucao = await this.resolucoesRepository.update({
       where: { id },
       data: updateResolucaoDto
     });
-    return updated;
+    return updatedResolucao;
   }
 
   async remove(id: string): Promise<Resolucao> {

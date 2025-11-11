@@ -35,11 +35,11 @@ export class AtividadesService {
     const existingAtividade = await this.atividadesRepository.findOne({ where: { id } });
     if (!existingAtividade) throw new NotFoundException('Atividade não encontrada.');
 
-    const updated = await this.atividadesRepository.update({
+    const updatedAtividade = await this.atividadesRepository.update({
       where: { id },
       data: updateAtividadeDto
     });
-    return updated;
+    return updatedAtividade;
   }
 
   async remove(id: string): Promise<Atividade> {
