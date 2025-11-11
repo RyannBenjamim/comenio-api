@@ -6,7 +6,7 @@ import { CreateAtividadeDto } from './dto/create-atividade.dto';
 import { UpdateAtividadeDto } from './dto/update-atividade.dto';
 import type { ApiResponse } from '../../common/interfaces/ApiResponse';
 
-@Controller('atividades')
+@Controller()
 export class AtividadesController {
   constructor(private readonly atividadesService: AtividadesService) {}
 

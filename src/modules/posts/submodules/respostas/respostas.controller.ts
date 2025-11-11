@@ -6,7 +6,7 @@ import { CreateRespostaDto } from './dto/create-resposta.dto';
 import { UpdateRespostaDto } from './dto/update-resposta.dto';
 import type { ApiResponse } from '../../../../common/interfaces/ApiResponse';
 
-@Controller('respostas')
+@Controller()
 export class RespostasController {
   constructor(private readonly respostasService: RespostasService) {}
 

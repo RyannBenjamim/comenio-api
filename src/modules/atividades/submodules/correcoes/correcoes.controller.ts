@@ -6,7 +6,7 @@ import { CreateCorrecaoDto } from './dto/create-correcao.dto';
 import { UpdateCorrecaoDto } from './dto/update-correcao.dto';
 import type { ApiResponse } from '../../../../common/interfaces/ApiResponse';
 
-@Controller('correcoes')
+@Controller()
 export class CorrecoesController {
   constructor(private readonly correcoesService: CorrecoesService) {}
 

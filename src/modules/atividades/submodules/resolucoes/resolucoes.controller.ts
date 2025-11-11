@@ -6,7 +6,7 @@ import { CreateResolucaoDto } from './dto/create-resolucao.dto';
 import { UpdateResolucaoDto } from './dto/update-resolucao.dto';
 import type { ApiResponse } from '../../../../common/interfaces/ApiResponse';
 
-@Controller('resolucoes')
+@Controller()
 export class ResolucoesController {
   constructor(private readonly resolucoesService: ResolucoesService) {}
 

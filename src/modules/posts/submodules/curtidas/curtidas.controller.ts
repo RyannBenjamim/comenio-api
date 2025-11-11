@@ -5,7 +5,7 @@ import { ApiResponse } from "../../../../common/interfaces/ApiResponse";
 import { Curtida } from "@prisma/client";
 import { ValidateUUIDPipe } from "src/common/pipes/ValideUUIDPipe";
 
-@Controller('curtidas')
+@Controller()
 export class CurtidasController {
   constructor(private readonly curtidasService: CurtidasService) {}
 
