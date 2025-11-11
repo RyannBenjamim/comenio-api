@@ -21,8 +21,8 @@ export class AtividadesService {
   }
 
   async findAll(): Promise<Atividade[]> {
-    const list = await this.atividadesRepository.findAll();
-    return list;
+    const atividades = await this.atividadesRepository.findAll();
+    return atividades;
   }
 
   async findOne(id: string): Promise<Atividade> {

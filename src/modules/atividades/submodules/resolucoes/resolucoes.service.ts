@@ -25,8 +25,8 @@ export class ResolucoesService {
   }
 
   async findAll(): Promise<Resolucao[]> {
-    const list = await this.resolucoesRepository.findAll();
-    return list;
+    const resolucoes = await this.resolucoesRepository.findAll();
+    return resolucoes;
   }
 
   async findOne(id: string): Promise<Resolucao> {

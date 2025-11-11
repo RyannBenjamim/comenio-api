@@ -1,6 +1,5 @@
 import { MateriasService } from './../materias/materias.service';
 import { TurmasService } from './../turmas/turmas.service';
-import { ProfessoresService } from './../../usuarios/submodules/professores/professores.service';
 import { UsuariosService } from './../../usuarios/usuarios.service';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { AulasRepository } from './aulas.repository';
@@ -13,7 +12,6 @@ export class AulasService {
   constructor(
     private readonly aulasRepository: AulasRepository,
     private readonly usuariosService: UsuariosService,
-    private readonly professoresService: ProfessoresService,
     private readonly turmasService: TurmasService,
     private readonly materiasService: MateriasService
   ) {}
@@ -23,7 +21,6 @@ export class AulasService {
     const existingTeacher = await this.usuariosService.findOne(createAulaDto.professorId);
     
     // Verifica se o id é realmente de um professor
-    // OBS -> Analisar se é realmente preciso ter esse bloco...
     if (existingTeacher.cargo !== 'PROFESSOR') {
       throw new ForbiddenException('Apenas professores podem ser cadastrados a uma materia.');
     }
