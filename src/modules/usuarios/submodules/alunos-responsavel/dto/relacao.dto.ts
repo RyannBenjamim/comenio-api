@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export class AddResponsavelDto {
+export class RelacaoDto {
   @IsUUID()
   @IsNotEmpty()
   alunoId: string;

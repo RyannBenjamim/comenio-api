@@ -30,6 +30,10 @@ import { RouterModule } from '@nestjs/core';
           {
             path: 'curtidas',
             module: CurtidasModule
+          },
+          {
+            path: '',
+            module: PostsModule
           }
         ]
       }

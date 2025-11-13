@@ -24,6 +24,10 @@ import { CorrecoesModule } from './submodules/correcoes/correcoes.module';
           {
             path: 'correcoes',
             module: CorrecoesModule
+          },
+          {
+            path: '',
+            module: AtividadesModule
           }
         ]
       }

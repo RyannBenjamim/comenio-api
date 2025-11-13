@@ -9,6 +9,7 @@ import { InstituicoesModule } from '../instituicoes/instituicoes.module';
 import { ModeradoresModule } from './submodules/moderadores/moderadores.module';
 import { ResponsaveisModule } from './submodules/responsaveis/responsaveis.module';
 import { ProfessoresModule } from './submodules/professores/professores.module';
+import { AlunosResponsavelModule } from './submodules/alunos-responsavel/alunos-responsavel.module';
 
 @Module({
   controllers: [UsuariosController],
@@ -40,8 +41,12 @@ import { ProfessoresModule } from './submodules/professores/professores.module';
             module: ResponsaveisModule,
           },
           {
+            path: 'alunos-responsavel',
+            module: AlunosResponsavelModule,
+          },
+          {
             path: '',
-            module: UsuariosModule, 
+            module: UsuariosModule,
           },
         ],
       },
