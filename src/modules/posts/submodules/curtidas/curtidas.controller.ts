@@ -9,7 +9,7 @@ import { ValidateUUIDPipe } from "src/common/pipes/ValideUUIDPipe";
 export class CurtidasController {
   constructor(private readonly curtidasService: CurtidasService) {}
 
-  @Post()
+  @Post('like')
   async like(
     @Body(new ValidationPipe()) createCurtidaDto: CurtidaDto
   ): Promise<ApiResponse> {
@@ -18,7 +18,7 @@ export class CurtidasController {
   }
 
   
-  @Post()
+  @Post('unlike')
   async unlike(
     @Body(new ValidationPipe()) removeCurtidaDto: CurtidaDto
   ): Promise<ApiResponse> {
