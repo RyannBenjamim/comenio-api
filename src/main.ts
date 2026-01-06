@@ -8,6 +8,12 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  app.enableCors({
+    origin: 'http://localhost:5173', 
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'], 
+    credentials: true, 
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,            
