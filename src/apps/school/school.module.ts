@@ -3,9 +3,9 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { LoginModule } from './login/login.module';
 import { FeedsModule } from './feeds/feeds.module';
 import { ComunidadesModule } from './comunidades/comunidades.module';
-import { AtividadesModule } from './atividades/atividades.module';
-import { PostsModule } from './posts/posts.module';
-import { TurmasModule } from './academico/turmas/turmas.module';
+import { SocialModule } from './social/social.module';
+import { AvaliativoModule } from './avaliativo/avaliativo.module';
+import { AcademicoModule } from './academico/academico.module';
 
 @Module({
   imports: [
@@ -13,9 +13,9 @@ import { TurmasModule } from './academico/turmas/turmas.module';
     LoginModule,
     FeedsModule,
     ComunidadesModule,
-    AtividadesModule,
-    PostsModule,
-    TurmasModule,
+    AvaliativoModule,
+    SocialModule,
+    AcademicoModule,
   ],
 })
 export class SchoolModule {}

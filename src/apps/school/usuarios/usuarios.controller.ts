@@ -20,8 +20,9 @@ import { sanitizeUser } from '../../../common/utils/sanitizeUser';
 import type { ApiResponse } from '../../../common/interfaces/ApiResponse';
 import type { AuthenticatedRequest } from '../../../common/interfaces/AuthenticatedRequest';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FirebaseService } from '../../../common/firebase/firebase.service';
 import { AuthRoles } from '../../../auth/decorators/auth-roles.decorator';
+import { ImageFilePipe } from '../../../common/pipes/ImageFilePipe';
+import { MyProfile } from '../../../common/interfaces/MyProfile';
 
 @Controller()
 export class UsuariosController {
@@ -49,6 +50,37 @@ export class UsuariosController {
     return {
       message: 'Usuários listados com sucesso.',
       data: response.map(sanitizeUser)
+    }
+  }
+
+  @Get('perfil')
+  async getMyProfile(
+    @Request() req: AuthenticatedRequest,
+  ): Promise<ApiResponse<MyProfile>> {
+    const response = await this.usuariosService.getMyProfile({
+      instituicaoId: req.user.instituicaoId,
+      id: req.user.id
+    });
+
+    return {
+      message: 'Perfil buscado(a) com sucesso.',
+      data: response
+    }
+  }
+
+  @Get('perfil/:nickname')
+  async getProfileByNickname(
+    @Request() req: AuthenticatedRequest,
+    @Param('nickname') nickname: string
+  ): Promise<ApiResponse<MyProfile>> {
+    const response = await this.usuariosService.getMyProfile({
+      instituicaoId: req.user.instituicaoId,
+      nickname
+    });
+
+    return {
+      message: 'Perfil buscado(a) com sucesso.',
+      data: response
     }
   }
 
@@ -94,7 +126,7 @@ export class UsuariosController {
   @Post('me/foto-perfil')
   @UseInterceptors(FileInterceptor('foto'))
   async uploadAndUpdateFotoPerfil(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(ImageFilePipe({ required: true })) file: Express.Multer.File,
     @Request() req: AuthenticatedRequest,
   ): Promise<ApiResponse<{ fotoPerfilUrl: string }>> {
     const userId = req.user.id;

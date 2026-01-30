@@ -4,7 +4,6 @@ import { isUUID } from 'class-validator';
 @Injectable()
 export class ValidateUUIDPipe implements PipeTransform<string> {
   transform(value: any) {
-    console.log('no pipe: ' + value)
     if (
       value === undefined ||
       value === null ||

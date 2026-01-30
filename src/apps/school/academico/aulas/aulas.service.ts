@@ -46,7 +46,6 @@ export class AulasService {
       await tx.comunidade.create({
         data: {
           titulo: createAulaDto.nomeComunidade,
-          fotoCaminho: null,
           aulaId: aula.id,
           instituicaoId
         }

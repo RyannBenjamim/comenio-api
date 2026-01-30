@@ -1,0 +1,15 @@
+import { Injectable } from "@nestjs/common";
+import { PrismaClient, Atividade } from "@prisma/client";
+import { AbstractRepository } from "../../../../../common/repositories/AbstractRepository";
+import { PrismaService } from "../../../../../common/database/prisma.service";
+
+@Injectable()
+export class AtividadesRepository extends AbstractRepository<Atividade, PrismaClient['atividade']> {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
+  }
+
+  get model() {
+    return this.prisma.atividade;
+  }
+}

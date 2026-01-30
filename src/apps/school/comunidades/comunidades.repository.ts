@@ -18,6 +18,18 @@ export class ComunidadesRepository extends AbstractRepository<
 
   // Métodos específicos de Comunidades
 
+  async findOneWithProfessor(
+    id: string,
+    instituicaoId: string
+  ) {
+    return this.model.findFirst({
+      where: { id, instituicaoId },
+      include: {
+        aula: { select: { professorId: true } }
+      }
+    });
+  }
+
   async resolveAccessContext(
     id: string,
     instituicaoId: string,

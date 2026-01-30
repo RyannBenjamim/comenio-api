@@ -11,19 +11,17 @@ import { AuthModule } from './auth/auth.module';
     // Configuração global do Throttler
     ThrottlerModule.forRoot([
       {
-        name: "default",
-        ttl: 60000, 
-        limit: 100, 
-        blockDuration: 5000  
+        name: 'default',
+        ttl: 60000,
+        limit: 100,
+        blockDuration: 5000,
       },
     ]),
     AuthModule,
     PrismaModule,
     FirebaseModule,
     AdminModule,
-    SchoolModule
+    SchoolModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}

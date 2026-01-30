@@ -50,7 +50,7 @@ model Usuario {
   instituicaoId     String
   primeiroNome      String
   sobrenome         String
-  nickname          String?
+  nickname          String?    @unique
   bio               String?
   email             String     @unique
   senha             String
@@ -98,6 +98,7 @@ model Professor {
   usuario    Usuario @relation(fields: [userId], references: [id])
   aulas      Aula[]
   correcoes  Correcao[]
+  atividades    Atividade[]
 }
 
 enum StatusContrato {
@@ -204,7 +205,6 @@ model Comunidade {
   id            String @id @default(uuid())
   instituicaoId String
   titulo        String
-  fotoCaminho   String?
   aulaId        String @unique
 
   instituicao   Instituicao @relation(fields: [instituicaoId], references: [id])
@@ -228,6 +228,9 @@ model Atividade {
   pdfCaminho    String?
   dataInicio    DateTime
   dataFim       DateTime
+
+  professorId   String
+  professor     Professor @relation(fields: [professorId], references: [userId])
 
   comunidadeId  String
   comunidade    Comunidade @relation(fields: [comunidadeId], references: [id])
@@ -295,7 +298,6 @@ model Post {
   id            String @id @default(uuid())
   instituicaoId String
 
-  titulo        String
   conteudo      String
   fotoCaminho   String?
   fotoUrl       String?

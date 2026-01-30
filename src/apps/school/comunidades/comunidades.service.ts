@@ -1,15 +1,20 @@
+import { TurmasService } from './../academico/turmas/turmas.service';
 import { AulasService } from '../academico/aulas/aulas.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ComunidadesRepository } from './comunidades.repository';
 import { CreateComunidadeDto } from './dto/create-comunidade.dto';
 import { UpdateComunidadeDto } from './dto/update-comunidade.dto';
 import { Comunidade } from '@prisma/client';
+import { ComunidadeListDto } from './dto/comunidade-list.dto';
+import { ComunidadeWithProfessor } from './types/ComunidadeWithProfessor';
+import { ComunidadewithProfessorId } from './types/ComunidadeWithProfessorId';
 
 @Injectable()
 export class ComunidadesService {
   constructor(
     private readonly comunidadesRepository: ComunidadesRepository,
-    private readonly aulasService: AulasService
+    private readonly aulasService: AulasService,
+    private readonly turmasService: TurmasService
   ) {}
 
   async create(createComunidadeDto: CreateComunidadeDto, instituicaoId: string): Promise<Comunidade> {
@@ -19,7 +24,6 @@ export class ComunidadesService {
     const createdComutities = await this.comunidadesRepository.create({
       data: {
         titulo: createComunidadeDto.titulo,
-        fotoCaminho: createComunidadeDto.fotoCaminho ?? null,
         aulaId: createComunidadeDto.aulaId,
         instituicaoId
       }
@@ -27,13 +31,55 @@ export class ComunidadesService {
     return createdComutities;
   }
 
-  async findAll(instituicaoId: string): Promise<Comunidade[]> {
-    const list = await this.comunidadesRepository.findAll({ where: { instituicaoId } });
-    return list;
+  async findAll(
+    instituicaoId: string,
+    turmaId?: string
+  ): Promise<ComunidadeListDto[]> {
+    const where: any = { instituicaoId };
+
+    if (turmaId) {
+      await this.turmasService.findOne(turmaId, instituicaoId);
+      where.aula = { turmaId };
+    }
+
+    const list = await this.comunidadesRepository.findAll({ 
+      where,
+      include: {
+        aula: {
+          select: {
+            professor: {
+              select: {
+                usuario: {
+                  select: {
+                    primeiroNome: true,
+                    sobrenome: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }) as ComunidadeWithProfessor[];
+
+    return list.map((comunidade) => ({
+      id: comunidade.id,
+      titulo: comunidade.titulo,
+      aulaId: comunidade.aulaId,
+      professor: `${comunidade.aula.professor.usuario.primeiroNome} ${comunidade.aula.professor.usuario.sobrenome}`,
+      createdAt: comunidade.createdAt,
+      updatedAt: comunidade.updatedAt
+    }));
   }
 
   async findOne(id: string, instituicaoId: string): Promise<Comunidade> {
     const existingComutitie = await this.comunidadesRepository.findOne({ where: { id, instituicaoId } });
+    if (!existingComutitie) throw new NotFoundException('Comunidade não encontrada.');
+    return existingComutitie;
+  }
+
+  async findOneWithProfessor(id: string, instituicaoId: string): Promise<ComunidadewithProfessorId> {
+    const existingComutitie = await this.comunidadesRepository.findOneWithProfessor(id, instituicaoId);
     if (!existingComutitie) throw new NotFoundException('Comunidade não encontrada.');
     return existingComutitie;
   }
@@ -57,7 +103,7 @@ export class ComunidadesService {
     return deletedComutitie;
   }
 
-  async getStudentCommunities(userId: string, instituicaoId: string) {
+  async getStudentCommunities(userId: string, instituicaoId: string): Promise<{ id: string, titulo: string }[]> {
     const comunitities = await this.comunidadesRepository.findAll({
       where: {
         instituicaoId,
@@ -72,7 +118,7 @@ export class ComunidadesService {
     return comunitities
   }
 
-  async getTeacherCommunities(userId: string, instituicaoId: string) {
+  async getTeacherCommunities(userId: string, instituicaoId: string): Promise<{ id: string, titulo: string }[]> {
     const comunitities = await this.comunidadesRepository.findAll({
       where: {
         instituicaoId,

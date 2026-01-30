@@ -6,10 +6,6 @@ export class CreateComunidadeDto {
   titulo: string;
 
   @IsString()
-  @IsOptional()
-  fotoCaminho?: string;
-
-  @IsString()
   @IsNotEmpty()
   aulaId: string;
 }

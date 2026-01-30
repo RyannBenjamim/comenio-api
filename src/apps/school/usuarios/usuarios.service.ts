@@ -3,12 +3,19 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { UsuariosRepository } from './usuarios.repository';
 import { FirebaseService } from '../../../common/firebase/firebase.service';
+import { MyProfile } from '../../../common/interfaces/MyProfile';
 import { Usuario } from '@prisma/client';
-import { NotFoundException, Injectable, ConflictException, BadRequestException } from '@nestjs/common';
+import { NotFoundException, Injectable, ConflictException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import path from 'path';
 
+type GetProfileParams = {
+  instituicaoId: string;
+  id?: string;
+  nickname?: string;
+};
 
 @Injectable()
 export class UsuariosService {
@@ -37,7 +44,7 @@ export class UsuariosService {
       data: {
         primeiroNome: modifiedUser.primeiroNome,
         sobrenome: modifiedUser.sobrenome,
-        nickname: modifiedUser.primeiroNome,
+        nickname: `${modifiedUser.primeiroNome.toLowerCase()}_${uuidv4().slice(0, 8)}`,
         bio: null,
         email: modifiedUser.email,
         senha: modifiedUser.senha,
@@ -80,25 +87,30 @@ export class UsuariosService {
     return deletedUser;
   }
 
-  async atualizarFotoPerfil(id: string, fotoPerfilUrl: string, instituicaoId: string) {
+  async getMyProfile({
+    instituicaoId,
+    id,
+    nickname
+  }: GetProfileParams): Promise<MyProfile> {
+    const where = nickname ? { nickname, instituicaoId } : { id, instituicaoId };
+    const existingUser = await this.usuariosRepository.findMyProfile(where);
+    if (!existingUser) throw new NotFoundException('Perfil do usuário não encontrado.');
+    return existingUser;
+  }
+
+  async atualizarFotoPerfil(
+    id: string, 
+    fotoPerfilUrl: string, 
+    fotoPerfilCaminho: string, 
+    instituicaoId: string
+  ) {
     return this.usuariosRepository.update({
       where: { id, instituicaoId },
-      data: { fotoPerfilUrl },
+      data: { fotoPerfilUrl, fotoPerfilCaminho },
     });
   }
 
   async uploadAndUpdateFotoPerfil(file: Express.Multer.File, userId: string, instituicaoId: string): Promise<string> {
-    if (!file) {
-      throw new BadRequestException('Nenhum arquivo enviado');
-    }
-    
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.mimetype)) {
-      throw new BadRequestException(
-        'Formato de imagem não suportado. Use JPG, PNG ou WEBP.',
-      );
-    }
-    
     const usuario = await this.findOne(
       userId,
       instituicaoId,
@@ -110,16 +122,26 @@ export class UsuariosService {
     
     const ext = path.extname(file.originalname).toLowerCase();
     const uuid = randomUUID();
-    const caminho = `instituicoes/${instituicaoId}/usuarios/${userId}/perfil/perfil-${uuid}${ext}`;
+    const fotoPerfilCaminho = `instituicoes/${instituicaoId}/usuarios/${userId}/perfil/perfil-${uuid}${ext}`;
     
     const fotoPerfilUrl = await this.firebaseService.uploadFile(
-      caminho,
+      fotoPerfilCaminho,
       file.buffer,
       file.mimetype,
     );
 
-    await this.atualizarFotoPerfil(userId, fotoPerfilUrl, instituicaoId);
+    try {
+      await this.atualizarFotoPerfil(
+        userId,
+        fotoPerfilUrl,
+        fotoPerfilCaminho,
+        instituicaoId,
+      );
 
-    return fotoPerfilUrl
+      return fotoPerfilUrl;
+    } catch (error) {
+      await this.firebaseService.deleteFile(fotoPerfilCaminho);
+      throw error;
+    }
   }
 }

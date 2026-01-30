@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../common/database/prisma.service';
 import { PrismaClient ,Prisma, Usuario } from '@prisma/client';
 import { AbstractRepository } from '../../../common/repositories/AbstractRepository';
+import { MyProfile } from 'src/common/interfaces/MyProfile';
 
 const defaultUserInclude: Prisma.UsuarioInclude = {
   aluno: {
@@ -57,5 +58,28 @@ export class UsuariosRepository extends AbstractRepository<Usuario, PrismaClient
 
   async findOneByEmail(email: string): Promise<Usuario | null> {
     return this.model.findUnique({ where: { email } });
+  }
+
+  async findMyProfile(
+    where: Prisma.UsuarioWhereUniqueInput
+  ): Promise<MyProfile | null> {
+    return this.model.findUnique({
+      where,
+      select: {
+        id: true,
+        primeiroNome: true,
+        sobrenome: true,
+        bio: true,
+        nickname: true,
+        fotoPerfilUrl: true,
+        aluno: {
+          select: {
+            turma: {
+              select: { titulo: true }
+            }
+          }
+        }
+      },
+    })
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, ValidationPipe, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, ValidationPipe, Request, Query } from '@nestjs/common';
 import { ComunidadesService } from './comunidades.service';
 import { Comunidade } from '@prisma/client';
 import { ValidateUUIDPipe } from '../../../common/pipes/ValideUUIDPipe';
@@ -6,6 +6,7 @@ import { CreateComunidadeDto } from './dto/create-comunidade.dto';
 import { UpdateComunidadeDto } from './dto/update-comunidade.dto';
 import type { ApiResponse } from '../../../common/interfaces/ApiResponse';
 import type { AuthenticatedRequest } from '../../../common/interfaces/AuthenticatedRequest';
+import { ComunidadeListDto } from './dto/comunidade-list.dto';
 
 @Controller('api/comunidades')
 export class ComunidadesController {
@@ -26,8 +27,9 @@ export class ComunidadesController {
   @Get()
   async findAll(
     @Request() req: AuthenticatedRequest,
-  ): Promise<ApiResponse<Comunidade[]>> {
-    const response = await this.comunidadesService.findAll(req.user.instituicaoId);
+    @Query('turmaId', ValidateUUIDPipe) turmaId?: string
+  ): Promise<ApiResponse<ComunidadeListDto[]>> {
+    const response = await this.comunidadesService.findAll(req.user.instituicaoId, turmaId);
     return {
       message: 'Comunidades listadas com sucesso.',
       data: response
