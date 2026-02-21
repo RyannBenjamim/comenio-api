@@ -6,6 +6,8 @@ import { UsuariosModule } from '../../../usuarios/usuarios.module';
 import { PostsModule } from '../posts/posts.module';
 import { ComunidadesModule } from '../../../comunidades/comunidades.module';
 import { FeedsModule } from '../../../feeds/feeds.module';
+import { PrismaModule } from '../../../../../common/database/prisma.module';
+import { FirebaseModule } from '../../../../../common/firebase/firebase.module';
 
 @Module({
   controllers: [RespostasController],
@@ -16,7 +18,9 @@ import { FeedsModule } from '../../../feeds/feeds.module';
     ComunidadesModule,
     FeedsModule,
     PostsModule,
-    RespostasModule
+    RespostasModule,
+    PrismaModule,
+    FirebaseModule
   ]
 })
 export class RespostasModule {}

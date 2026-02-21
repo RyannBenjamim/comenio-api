@@ -6,10 +6,6 @@ export class CreateRespostaDto {
   conteudo: string;
 
   @IsString()
-  @IsNotEmpty()
-  userId: string;
-
-  @IsString()
   @IsOptional()
   postId?: string;
 

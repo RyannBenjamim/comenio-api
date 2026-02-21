@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, ValidationPipe, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, ValidationPipe, Request, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { RespostasService } from './respostas.service';
 import { Resposta } from '@prisma/client';
 import { ValidateUUIDPipe } from '../../../../../common/pipes/ValideUUIDPipe';
@@ -8,29 +8,27 @@ import type { ApiResponse } from '../../../../../common/interfaces/ApiResponse';
 import type { AuthenticatedRequest } from "../../../../../common/interfaces/AuthenticatedRequest";
 import { SocialContextResolverGuard } from '../../guards/social-context-resolver.guard';
 import { ContextAccessGuard } from '../../../../../common/guards/context-access.guard';
+import { ImageFilePipe } from 'src/common/pipes/ImageFilePipe';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { RespostaResponseDto } from './dto/resposta-response.dto';
 
 @Controller('api/respostas')
 export class RespostasController {
   constructor(private readonly respostasService: RespostasService) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('foto'))
   async create(
     @Request() req: AuthenticatedRequest,
-    @Body(new ValidationPipe()) createDto: CreateRespostaDto
+    @Body(new ValidationPipe()) createDto: CreateRespostaDto,
+    @UploadedFile(ImageFilePipe()) file?: Express.Multer.File
   ): Promise<ApiResponse<Resposta>> {
     const user = req.user;
-    const { instituicaoId } = user;
-
-    const context = { 
-      comunidadeId: req.context?.comunidadeId,
-      feedId: req.context?.feedId
-    }
 
     const response = await this.respostasService.create(
       createDto,
-      context,
-      instituicaoId,
-      //user
+      user,
+      file
     );
 
     return {
@@ -45,10 +43,22 @@ export class RespostasController {
     @Request() req: AuthenticatedRequest,
     @Query('postId', ValidateUUIDPipe) postId?: string,
     @Query('respostaId', ValidateUUIDPipe) respostaId?: string,
-  ): Promise<ApiResponse<Resposta[]>> {
+  ): Promise<ApiResponse<RespostaResponseDto[]>> {
     const response = await this.respostasService.findAll(req.user.instituicaoId, postId, respostaId);
     return {
       message: 'Respostas listadas com sucesso.',
+      data: response
+    };
+  }
+
+  @Get('me')
+  async findAllByUserId(
+    @Request() req: AuthenticatedRequest,
+  ): Promise<ApiResponse<RespostaResponseDto[]>> {
+    const { id: userId, instituicaoId } = req.user;
+    const response = await this.respostasService.findAllByUserId(userId, instituicaoId);
+    return {
+      message: 'Minhas respostas listadas com sucesso.',
       data: response
     };
   }
@@ -58,7 +68,7 @@ export class RespostasController {
   async findOne(
     @Request() req: AuthenticatedRequest,
     @Param('respostaId', ValidateUUIDPipe) id: string
-  ): Promise<ApiResponse<Resposta>> {
+  ): Promise<ApiResponse<RespostaResponseDto>> {
     const response = await this.respostasService.findOne(id, req.user.instituicaoId);
     return {
       message: 'Resposta buscada com sucesso.',

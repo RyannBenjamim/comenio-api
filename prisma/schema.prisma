@@ -50,7 +50,7 @@ model Usuario {
   instituicaoId     String
   primeiroNome      String
   sobrenome         String
-  nickname          String?    @unique
+  nickname          String    @unique
   bio               String?
   email             String     @unique
   senha             String

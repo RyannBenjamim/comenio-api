@@ -29,6 +29,7 @@ export class InstituicoesService {
         data: {
           primeiroNome: instituicao.nome,
           sobrenome: '',
+          nickname: instituicao.nome,
           email: instituicao.email,
           senha: senhaHash,
           dataNascimento: new Date(),

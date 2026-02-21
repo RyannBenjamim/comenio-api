@@ -282,6 +282,12 @@ export class PostsService {
             fotoPerfilUrl: true,
           },
         },
+        comunidade: { 
+          select: { id: true, titulo: true } 
+        },
+        feed: { 
+          select: { id: true, titulo: true } 
+        }
       },
     });
     
