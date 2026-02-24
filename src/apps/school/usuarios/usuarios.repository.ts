@@ -60,6 +60,10 @@ export class UsuariosRepository extends AbstractRepository<Usuario, PrismaClient
     return this.model.findUnique({ where: { email } });
   }
 
+  async findOneByNickname(nickname: string): Promise<Usuario | null> {
+    return this.model.findUnique({ where: { nickname } });
+  }
+
   async findMyProfile(
     where: Prisma.UsuarioWhereUniqueInput
   ): Promise<MyProfile | null> {
