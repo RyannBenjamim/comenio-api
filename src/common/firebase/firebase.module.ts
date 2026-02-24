@@ -10,10 +10,10 @@ import * as fs from 'fs';
     {
       provide: 'FIREBASE',
       useFactory: () => {
-        const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+        const configRaw = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
         const bucketName = process.env.FIREBASE_STORAGE_BUCKET;
 
-        if (!serviceAccountPath) {
+        if (!configRaw) {
           throw new Error('FIREBASE_SERVICE_ACCOUNT_PATH não definido');
         }
 
@@ -21,15 +21,26 @@ import * as fs from 'fs';
           throw new Error('FIREBASE_STORAGE_BUCKET não definido');
         }
 
-        const resolvedPath = path.resolve(serviceAccountPath);
+        let serviceAccount: any;
 
-        if (!fs.existsSync(resolvedPath)) {
-          throw new Error(`Arquivo Firebase não encontrado em: ${resolvedPath}`);
+        if (configRaw.trim().startsWith('{')) {
+          try {
+            serviceAccount = JSON.parse(configRaw);
+            serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+          } catch (e) {
+            throw new Error('Erro ao fazer parse do JSON do Firebase em FIREBASE_SERVICE_ACCOUNT_PATH');
+          }
+        } else {
+          const resolvedPath = path.resolve(configRaw);
+          if (!fs.existsSync(resolvedPath)) {
+            throw new Error(`Arquivo Firebase não encontrado em: ${resolvedPath}`);
+          }
+          serviceAccount = require(resolvedPath);
         }
 
         if (!admin.apps.length) {
           admin.initializeApp({
-            credential: admin.credential.cert(require(resolvedPath)),
+            credential: admin.credential.cert(serviceAccount),
           });
         }
 
@@ -41,4 +52,3 @@ import * as fs from 'fs';
   exports: ['FIREBASE', FirebaseService],
 })
 export class FirebaseModule {}
-
