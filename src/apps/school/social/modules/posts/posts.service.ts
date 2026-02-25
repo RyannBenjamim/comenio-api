@@ -104,6 +104,7 @@ export class PostsService {
       if (fotoCaminho) {
         await safeDeleteFile(this.firebaseService, fotoCaminho, 3);
       }
+      console.log(error)
       throw error
     }
   }
