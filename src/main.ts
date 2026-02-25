@@ -11,7 +11,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173',
-      process.env.FRONTEND_URL
+      'https://comenio-front.vercel.app'
     ], 
     methods: ['GET', 'POST', 'PATCH', 'DELETE'], 
     credentials: true, 
