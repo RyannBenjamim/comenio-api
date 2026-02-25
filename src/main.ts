@@ -13,7 +13,6 @@ async function bootstrap() {
       'http://localhost:5173',
       'https://comenio-front.vercel.app'
     ], 
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'], 
     credentials: true, 
   });
 
