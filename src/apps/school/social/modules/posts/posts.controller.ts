@@ -24,17 +24,28 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ContextAccessGuard } from '../../../../../common/guards/context-access.guard';
 import { ImageFilePipe } from '../../../../../common/pipes/ImageFilePipe';
 import { SocialContextResolverGuard } from '../../guards/social-context-resolver.guard';
+import multer from 'multer';
 
 @Controller('api/posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @PostMethod()
-  @UseInterceptors(FileInterceptor('foto'))
+  @UseInterceptors(
+    FileInterceptor('foto', {
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 5 * 1024 * 1024,
+    },
+  }),
+  )
   async create(
     @Request() req: AuthenticatedRequest,
     @Body(new ValidationPipe()) createDto: CreatePostDto,
-    @UploadedFile(ImageFilePipe()) file?: Express.Multer.File
+    @UploadedFile(ImageFilePipe({ 
+      required: false, 
+      maxSizeMB: 5 
+    })) file?: Express.Multer.File,
   ): Promise<ApiResponse<Post>> {
     const user = req.user;
     const { id: userId, instituicaoId } = user;
