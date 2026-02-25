@@ -9,7 +9,10 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   app.enableCors({
-    origin: 'http://localhost:5173', 
+    origin: [
+      'http://localhost:5173',
+      process.env.FRONTEND_URL
+    ], 
     methods: ['GET', 'POST', 'PATCH', 'DELETE'], 
     credentials: true, 
   });
